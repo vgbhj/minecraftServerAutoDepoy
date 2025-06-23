@@ -20,6 +20,7 @@ func InitRouter() *gin.Engine {
 	apiv1.Use()
 	{
 		apiv1.POST("/server/start", v1.StartServer)
+		apiv1.POST("/server/stop", v1.StopServer)
 	}
 	return r
 }

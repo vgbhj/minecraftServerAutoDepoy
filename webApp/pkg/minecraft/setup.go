@@ -128,6 +128,15 @@ func Setup() {
 		log.Printf("Downloaded latest vanilla server.jar to %s", serverJarPath)
 	}
 
+	eulaPath := filepath.Join(dir, "eula.txt")
+	if _, err := os.Stat(eulaPath); os.IsNotExist(err) {
+		err := os.WriteFile(eulaPath, []byte("eula=true\n"), 0644)
+		if err != nil {
+			log.Fatalf("Failed to create eula.txt: %v", err)
+		}
+		log.Printf("Created eula.txt at %s", eulaPath)
+	}
+
 	assetsDir := filepath.Join(".", "assets")
 	dockerfileSrc := filepath.Join(assetsDir, "Dockerfile")
 	dockerComposeSrc := filepath.Join(assetsDir, "docker-compose.yaml")

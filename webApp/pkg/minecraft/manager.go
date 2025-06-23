@@ -19,3 +19,16 @@ func StartDockerContainer() error {
 	log.Printf("Minecraft server started with docker-compose in %s", dir)
 	return nil
 }
+
+func StopDockerContainer() error {
+	dir := setting.MinecraftSetting.ServerDir
+	cmd := exec.Command("docker-compose", "down")
+	cmd.Dir = dir
+	output, err := cmd.CombinedOutput()
+	if err != nil {
+		log.Printf("docker-compose output: %s", string(output))
+		return err
+	}
+	log.Printf("Minecraft server stopped with docker-compose in %s", dir)
+	return nil
+}

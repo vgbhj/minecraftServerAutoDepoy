@@ -46,6 +46,38 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/api/v1/server/stop": {
+            "post": {
+                "description": "Останавливает сервер Minecraft через docker-compose",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "minecraft"
+                ],
+                "summary": "Остановка сервера Minecraft",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 }`

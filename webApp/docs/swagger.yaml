@@ -22,4 +22,25 @@ paths:
       summary: Запуск сервера Minecraft
       tags:
       - minecraft
+  /api/v1/server/stop:
+    post:
+      description: Останавливает сервер Minecraft через docker-compose
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Остановка сервера Minecraft
+      tags:
+      - minecraft
 swagger: "2.0"

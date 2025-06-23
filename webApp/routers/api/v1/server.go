@@ -25,3 +25,24 @@ func StartServer(c *gin.Context) {
 		"message": "Minecraft server started successfully",
 	})
 }
+
+// @Summary      Остановка сервера Minecraft
+// @Description  Останавливает сервер Minecraft через docker-compose
+// @Tags         minecraft
+// @Produce      json
+// @Success      200  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /api/v1/server/stop [post]
+func StopServer(c *gin.Context) {
+	if err := minecraft.StopDockerContainer(); err != nil {
+		c.JSON(500, gin.H{
+			"error":   "Failed to stop Minecraft server",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "Minecraft server stopped successfully",
+	})
+}
