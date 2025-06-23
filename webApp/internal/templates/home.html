@@ -1,0 +1,8 @@
+{{define "content"}}
+<h1>Загрузка ядра Minecraft сервера</h1>
+<form enctype="multipart/form-data" action="/upload" method="post">
+    <input type="file" name="serverjar" required>
+    <button type="submit">Загрузить и развернуть</button>
+</form>
+{{end}}
+{{template "layout.html" .}}
