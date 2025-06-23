@@ -1,3 +1,0 @@
-package minecraft
-
-func Setup() {}

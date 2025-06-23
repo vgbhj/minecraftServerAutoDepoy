@@ -16,24 +16,30 @@ type Server struct {
 	HttpPort int    `env:"HTTP_PORT" envDefault:"8000"`
 }
 
+type Minecraft struct {
+	ServerDir string `env:"MINECRAFT_SERVER_DIR,required"`
+}
+
 var (
-	AppSetting    = &App{}
-	ServerSetting = &Server{}
+	AppSetting       = &App{}
+	ServerSetting    = &Server{}
+	MinecraftSetting = &Minecraft{}
 )
 
 func Setup() {
-	// 1️⃣ Загружаем .env
 	if err := godotenv.Load(); err != nil {
 		log.Println("No .env file found, reading from environment")
 	}
 
-	// 2️⃣ Парсим env-переменные в структуры
 	if err := env.Parse(AppSetting); err != nil {
 		log.Fatalf("Failed to parse AppSetting: %v", err)
 	}
 	if err := env.Parse(ServerSetting); err != nil {
 		log.Fatalf("Failed to parse ServerSetting: %v", err)
 	}
+	if err := env.Parse(MinecraftSetting); err != nil {
+		log.Fatalf("Failed to parse MinecraftSetting: %v", err)
+	}
 
-	log.Printf("Config: mode=%s port=%d\n", ServerSetting.RunMode, ServerSetting.HttpPort)
+	log.Printf("Config: mode=%s port=%d minecraft_dir=%s\n", ServerSetting.RunMode, ServerSetting.HttpPort, MinecraftSetting.ServerDir)
 }
