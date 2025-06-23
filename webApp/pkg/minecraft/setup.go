@@ -91,6 +91,24 @@ func downloadLatestVanillaServerJar(dest string) error {
 	return err
 }
 
+func copyFileIfNotExists(src, dst string) error {
+	if _, err := os.Stat(dst); os.IsNotExist(err) {
+		in, err := os.Open(src)
+		if err != nil {
+			return err
+		}
+		defer in.Close()
+		out, err := os.Create(dst)
+		if err != nil {
+			return err
+		}
+		defer out.Close()
+		_, err = io.Copy(out, in)
+		return err
+	}
+	return nil
+}
+
 func Setup() {
 	dir := setting.MinecraftSetting.ServerDir
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
@@ -108,5 +126,22 @@ func Setup() {
 			log.Fatalf("Failed to download server.jar: %v", err)
 		}
 		log.Printf("Downloaded latest vanilla server.jar to %s", serverJarPath)
+	}
+
+	assetsDir := filepath.Join(".", "assets")
+	dockerfileSrc := filepath.Join(assetsDir, "Dockerfile")
+	dockerComposeSrc := filepath.Join(assetsDir, "docker-compose.yaml")
+	dockerfileDst := filepath.Join(dir, "Dockerfile")
+	dockerComposeDst := filepath.Join(dir, "docker-compose.yaml")
+
+	if err := copyFileIfNotExists(dockerfileSrc, dockerfileDst); err != nil {
+		log.Printf("Failed to copy Dockerfile: %v", err)
+	} else {
+		log.Printf("Dockerfile checked/copied to %s", dockerfileDst)
+	}
+	if err := copyFileIfNotExists(dockerComposeSrc, dockerComposeDst); err != nil {
+		log.Printf("Failed to copy docker-compose.yaml: %v", err)
+	} else {
+		log.Printf("docker-compose.yaml checked/copied to %s", dockerComposeDst)
 	}
 }
