@@ -2,6 +2,10 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "github.com/vgbhj/minecraftServerAutoDepoy/docs"
+	v1 "github.com/vgbhj/minecraftServerAutoDepoy/routers/api/v1"
 )
 
 func InitRouter() *gin.Engine {
@@ -9,7 +13,13 @@ func InitRouter() *gin.Engine {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 
-	// r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
+	apiv1 := r.Group("/api/v1")
+
+	apiv1.Use()
+	{
+		apiv1.POST("/server/start", v1.StartServer)
+	}
 	return r
 }
