@@ -1,4 +1,11 @@
 definitions:
+  minecraft.ServerInfo:
+    properties:
+      type:
+        type: string
+      version:
+        type: string
+    type: object
   minecraft.VersionSelectionRequest:
     properties:
       core_option:
@@ -15,16 +22,28 @@ definitions:
 info:
   contact: {}
 paths:
+  /api/v1/minecraft/current:
+    get:
+      description: Returns currently selected server type and version
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/minecraft.ServerInfo'
+      summary: Get current server configuration
+      tags:
+      - minecraft
   /api/v1/minecraft/select:
     post:
       consumes:
       - application/json
-      description: Accepts and validates user's selection of Minecraft version, core
-        type and core option
+      description: Saves selected Minecraft version and server type
       parameters:
       - description: Selection data
         in: body
-        name: request
+        name: input
         required: true
         schema:
           $ref: '#/definitions/minecraft.VersionSelectionRequest'
@@ -32,20 +51,9 @@ paths:
       - application/json
       responses:
         "200":
-          description: Returns success message and selected options
+          description: OK
           schema:
             additionalProperties: true
-            type: object
-        "400":
-          description: Returns validation errors
-          schema:
-            additionalProperties: true
-            type: object
-        "500":
-          description: Internal server error
-          schema:
-            additionalProperties:
-              type: string
             type: object
       summary: Select Minecraft version and core
       tags:

@@ -12,11 +12,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type ServerInfo struct {
-	Type    string
-	Version string
-}
-
 type ValidationResult struct {
 	Valid       bool
 	Version     string
@@ -156,16 +151,14 @@ type VersionSelectionRequest struct {
 	CoreOption string `json:"core_option" binding:"required"`
 }
 
-// @Summary      Select Minecraft version and core
-// @Description  Accepts and validates user's selection of Minecraft version, core type and core option
-// @Tags         minecraft
-// @Accept       json
-// @Produce      json
-// @Param        request body VersionSelectionRequest true "Selection data"
-// @Success      200  {object}  map[string]interface{}  "Returns success message and selected options"
-// @Failure      400  {object}  map[string]interface{}  "Returns validation errors"
-// @Failure      500  {object}  map[string]string      "Internal server error"
-// @Router       /api/v1/minecraft/select [post]
+// @Summary Select Minecraft version and core
+// @Description Saves selected Minecraft version and server type
+// @Tags minecraft
+// @Accept json
+// @Produce json
+// @Param input body VersionSelectionRequest true "Selection data"
+// @Success 200 {object} map[string]interface{}
+// @Router /api/v1/minecraft/select [post]
 func HandleVersionSelection(c *gin.Context) {
 	var req VersionSelectionRequest
 
@@ -174,49 +167,14 @@ func HandleVersionSelection(c *gin.Context) {
 		return
 	}
 
-	// Проверка, что выбранная версия существует
-	validVersion := false
-	for _, v := range minecraftData.Versions {
-		if v == req.Version {
-			validVersion = true
-			break
-		}
-	}
-
-	if !validVersion {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid version"})
-		return
-	}
-
-	// Проверка, что выбранное ядро существует
-	coreOptions, exists := minecraftData.Cores[req.CoreType]
-	if !exists {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid core type"})
-		return
-	}
-
-	// Проверка, что выбранная опция ядра существует
-	validOption := false
-	for _, opt := range coreOptions {
-		if opt == req.CoreOption {
-			validOption = true
-			break
-		}
-	}
-
-	if !validOption {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid core option"})
-		return
-	}
-
-	// Здесь можно добавить логику обработки выбора (сохранение в БД и т.д.)
+	// Сохраняем выбранную конфигурацию
+	SetServerInfo(req.CoreType, req.Version)
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Selection successful",
-		"selection": gin.H{
-			"version":     req.Version,
-			"core_type":   req.CoreType,
-			"core_option": req.CoreOption,
+		"message": "Selection saved successfully",
+		"server": gin.H{
+			"type":    req.CoreType,
+			"version": req.Version,
 		},
 	})
 }

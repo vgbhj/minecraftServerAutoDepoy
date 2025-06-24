@@ -15,9 +15,29 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/minecraft/current": {
+            "get": {
+                "description": "Returns currently selected server type and version",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "minecraft"
+                ],
+                "summary": "Get current server configuration",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/minecraft.ServerInfo"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/minecraft/select": {
             "post": {
-                "description": "Accepts and validates user's selection of Minecraft version, core type and core option",
+                "description": "Saves selected Minecraft version and server type",
                 "consumes": [
                     "application/json"
                 ],
@@ -31,7 +51,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Selection data",
-                        "name": "request",
+                        "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -41,26 +61,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Returns success message and selected options",
+                        "description": "OK",
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
-                        }
-                    },
-                    "400": {
-                        "description": "Returns validation errors",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": true
-                        }
-                    },
-                    "500": {
-                        "description": "Internal server error",
-                        "schema": {
-                            "type": "object",
-                            "additionalProperties": {
-                                "type": "string"
-                            }
                         }
                     }
                 }
@@ -194,6 +198,17 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "minecraft.ServerInfo": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
         "minecraft.VersionSelectionRequest": {
             "type": "object",
             "required": [

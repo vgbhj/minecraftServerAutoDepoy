@@ -3,8 +3,10 @@ package minecraft
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os/exec"
 
+	"github.com/gin-gonic/gin"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
 )
 
@@ -49,4 +51,15 @@ func RestartDockerContainer() error {
 
 	log.Printf("Minecraft server restarted successfully")
 	return nil
+}
+
+// @Summary Get current server configuration
+// @Description Returns currently selected server type and version
+// @Tags minecraft
+// @Produce json
+// @Success 200 {object} ServerInfo
+// @Router /api/v1/minecraft/current [get]
+func GetCurrentConfig(c *gin.Context) {
+	config := GetServerInfo()
+	c.JSON(http.StatusOK, config)
 }
