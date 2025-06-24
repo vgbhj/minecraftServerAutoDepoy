@@ -1,6 +1,7 @@
 package minecraft
 
 import (
+	"fmt"
 	"log"
 	"os/exec"
 
@@ -30,5 +31,22 @@ func StopDockerContainer() error {
 		return err
 	}
 	log.Printf("Minecraft server stopped with docker-compose in %s", dir)
+	return nil
+}
+
+func RestartDockerContainer() error {
+	err := StopDockerContainer()
+	if err != nil {
+		log.Printf("Failed to stop container during restart: %v", err)
+		return fmt.Errorf("failed to stop container: %w", err)
+	}
+
+	err = StartDockerContainer()
+	if err != nil {
+		log.Printf("Failed to start container during restart: %v", err)
+		return fmt.Errorf("failed to start container: %w", err)
+	}
+
+	log.Printf("Minecraft server restarted successfully")
 	return nil
 }
