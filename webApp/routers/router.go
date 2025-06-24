@@ -5,6 +5,7 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	_ "github.com/vgbhj/minecraftServerAutoDepoy/docs"
+	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/minecraft"
 	v1 "github.com/vgbhj/minecraftServerAutoDepoy/routers/api/v1"
 )
 
@@ -22,7 +23,8 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/server/start", v1.StartServer)
 		apiv1.POST("/server/stop", v1.StopServer)
 		apiv1.POST("/server/restart", v1.RestartServer)
-		apiv1.GET("/minecraft/versions", v1.GetAvailableVersions)
+		apiv1.GET("/minecraft/versions", minecraft.GetAvailableVersions)
+		apiv1.POST("/minecraft/select", minecraft.HandleVersionSelection)
 	}
 	return r
 }

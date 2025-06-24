@@ -39,21 +39,19 @@ var minecraftData = struct {
 	},
 }
 
-func GetAvailableVersions() ([]string, map[string][]string, error) {
-	// Здесь может быть логика получения версий из:
-	// - Локального кэша
-	// - Внешнего API (например, Mojang API)
-	// - Базы данных
-	// - Конфигурационного файла
-
-	versions := []string{"1.20.1", "1.19.4", "1.18.2"}
-	cores := map[string][]string{
-		"Vanilla": {"Official"},
-		"Paper":   {"Latest", "Stable"},
-		"Forge":   {"Recommended"},
+// @Summary      Get available Minecraft versions and cores
+// @Description  Returns list of available Minecraft versions and server cores
+// @Tags         minecraft
+// @Produce      json
+// @Success      200  {object}  map[string]interface{}  "Returns versions and cores"
+// @Failure      500  {object}  map[string]string
+// @Router       /api/v1/minecraft/versions [get]
+func GetAvailableVersions(c *gin.Context) {
+	response := map[string]interface{}{
+		"versions": minecraftData.Versions,
+		"cores":    minecraftData.Cores,
 	}
-
-	return versions, cores, nil
+	c.JSON(http.StatusOK, response)
 }
 
 func validateVersion(serverInfo ServerInfo) (ValidationResult, error) {
@@ -158,7 +156,16 @@ type VersionSelectionRequest struct {
 	CoreOption string `json:"core_option" binding:"required"`
 }
 
-// HandleVersionSelection обрабатывает выбор версии
+// @Summary      Select Minecraft version and core
+// @Description  Accepts and validates user's selection of Minecraft version, core type and core option
+// @Tags         minecraft
+// @Accept       json
+// @Produce      json
+// @Param        request body VersionSelectionRequest true "Selection data"
+// @Success      200  {object}  map[string]interface{}  "Returns success message and selected options"
+// @Failure      400  {object}  map[string]interface{}  "Returns validation errors"
+// @Failure      500  {object}  map[string]string      "Internal server error"
+// @Router       /api/v1/minecraft/select [post]
 func HandleVersionSelection(c *gin.Context) {
 	var req VersionSelectionRequest
 

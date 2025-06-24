@@ -1,6 +1,55 @@
+definitions:
+  minecraft.VersionSelectionRequest:
+    properties:
+      core_option:
+        type: string
+      core_type:
+        type: string
+      version:
+        type: string
+    required:
+    - core_option
+    - core_type
+    - version
+    type: object
 info:
   contact: {}
 paths:
+  /api/v1/minecraft/select:
+    post:
+      consumes:
+      - application/json
+      description: Accepts and validates user's selection of Minecraft version, core
+        type and core option
+      parameters:
+      - description: Selection data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/minecraft.VersionSelectionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns success message and selected options
+          schema:
+            additionalProperties: true
+            type: object
+        "400":
+          description: Returns validation errors
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Select Minecraft version and core
+      tags:
+      - minecraft
   /api/v1/minecraft/versions:
     get:
       description: Returns list of available Minecraft versions and server cores

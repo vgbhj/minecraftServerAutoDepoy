@@ -4,6 +4,57 @@
         "contact": {}
     },
     "paths": {
+        "/api/v1/minecraft/select": {
+            "post": {
+                "description": "Accepts and validates user's selection of Minecraft version, core type and core option",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "minecraft"
+                ],
+                "summary": "Select Minecraft version and core",
+                "parameters": [
+                    {
+                        "description": "Selection data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/minecraft.VersionSelectionRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns success message and selected options",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "400": {
+                        "description": "Returns validation errors",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/minecraft/versions": {
             "get": {
                 "description": "Returns list of available Minecraft versions and server cores",
@@ -127,6 +178,27 @@
                             }
                         }
                     }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "minecraft.VersionSelectionRequest": {
+            "type": "object",
+            "required": [
+                "core_option",
+                "core_type",
+                "version"
+            ],
+            "properties": {
+                "core_option": {
+                    "type": "string"
+                },
+                "core_type": {
+                    "type": "string"
+                },
+                "version": {
+                    "type": "string"
                 }
             }
         }
