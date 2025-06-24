@@ -1,6 +1,26 @@
 info:
   contact: {}
 paths:
+  /api/v1/minecraft/versions:
+    get:
+      description: Returns list of available Minecraft versions and server cores
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns versions and cores
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get available Minecraft versions and cores
+      tags:
+      - minecraft
   /api/v1/server/restart:
     post:
       description: Перезагружает сервер Minecraft через docker-compose

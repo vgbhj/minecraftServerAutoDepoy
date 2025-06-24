@@ -1,5 +1,4 @@
-// тестовый файлик
-package main
+package minecraft
 
 import (
 	"encoding/json"
@@ -9,6 +8,8 @@ import (
 	"net/http"
 	"regexp"
 	"strings"
+
+	"github.com/gin-gonic/gin"
 )
 
 type ServerInfo struct {
@@ -22,6 +23,37 @@ type ValidationResult struct {
 	Build       string
 	Message     string
 	DownloadURL string
+}
+
+var minecraftData = struct {
+	Versions []string
+	Cores    map[string][]string
+}{
+	Versions: []string{"1.20.1", "1.19.4", "1.18.2", "1.17.1", "1.16.5"},
+	Cores: map[string][]string{
+		"Vanilla": {"Official"},
+		"Paper":   {"Latest", "Stable"},
+		"Spigot":  {"Latest", "Recommended"},
+		"Forge":   {"Latest", "Recommended"},
+		"Fabric":  {"Latest", "Stable"},
+	},
+}
+
+func GetAvailableVersions() ([]string, map[string][]string, error) {
+	// Здесь может быть логика получения версий из:
+	// - Локального кэша
+	// - Внешнего API (например, Mojang API)
+	// - Базы данных
+	// - Конфигурационного файла
+
+	versions := []string{"1.20.1", "1.19.4", "1.18.2"}
+	cores := map[string][]string{
+		"Vanilla": {"Official"},
+		"Paper":   {"Latest", "Stable"},
+		"Forge":   {"Recommended"},
+	}
+
+	return versions, cores, nil
 }
 
 func validateVersion(serverInfo ServerInfo) (ValidationResult, error) {
@@ -114,15 +146,70 @@ func validateVersion(serverInfo ServerInfo) (ValidationResult, error) {
 }
 
 func versionCheck(version, comparator, targetVersion string) bool {
-	// Здесь должна быть логика сравнения версий (например, "1.18.2" > "1.17.1")
-	// Для простоты возвращаем true.
+	// Я пока не понял че там нахуй написано в том auto-mc с проверкой версий
+	// поэтому пока заглушку
 	return true
 }
 
-func main() {
-	serv1 := ServerInfo{
-		Type:    "paper",
-		Version: "1.20.1",
+// VersionSelectionRequest запрос на выбор версии
+type VersionSelectionRequest struct {
+	Version    string `json:"version" binding:"required"`
+	CoreType   string `json:"core_type" binding:"required"`
+	CoreOption string `json:"core_option" binding:"required"`
+}
+
+// HandleVersionSelection обрабатывает выбор версии
+func HandleVersionSelection(c *gin.Context) {
+	var req VersionSelectionRequest
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
-	fmt.Println(validateVersion(serv1))
+
+	// Проверка, что выбранная версия существует
+	validVersion := false
+	for _, v := range minecraftData.Versions {
+		if v == req.Version {
+			validVersion = true
+			break
+		}
+	}
+
+	if !validVersion {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid version"})
+		return
+	}
+
+	// Проверка, что выбранное ядро существует
+	coreOptions, exists := minecraftData.Cores[req.CoreType]
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid core type"})
+		return
+	}
+
+	// Проверка, что выбранная опция ядра существует
+	validOption := false
+	for _, opt := range coreOptions {
+		if opt == req.CoreOption {
+			validOption = true
+			break
+		}
+	}
+
+	if !validOption {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid core option"})
+		return
+	}
+
+	// Здесь можно добавить логику обработки выбора (сохранение в БД и т.д.)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Selection successful",
+		"selection": gin.H{
+			"version":     req.Version,
+			"core_type":   req.CoreType,
+			"core_option": req.CoreOption,
+		},
+	})
 }

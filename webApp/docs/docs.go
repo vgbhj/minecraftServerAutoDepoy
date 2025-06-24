@@ -15,6 +15,36 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/minecraft/versions": {
+            "get": {
+                "description": "Returns list of available Minecraft versions and server cores",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "minecraft"
+                ],
+                "summary": "Get available Minecraft versions and cores",
+                "responses": {
+                    "200": {
+                        "description": "Returns versions and cores",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/server/restart": {
             "post": {
                 "description": "Перезагружает сервер Minecraft через docker-compose",
