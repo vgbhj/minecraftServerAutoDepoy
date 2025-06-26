@@ -56,7 +56,7 @@ func Deployment(c *gin.Context) {
 
 	// Выполнение команд
 	commands := []string{
-		"wget https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/deployAppV0.2/deployApp/install.sh",
+		"wget https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/deployApp/install.sh",
 		"chmod +x install.sh",
 		"sudo ./install.sh",
 	}
