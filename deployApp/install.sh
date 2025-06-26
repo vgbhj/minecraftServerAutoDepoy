@@ -1,6 +1,5 @@
 #!/bin/bash
 
-# Определение пакетного менеджера и команд
 if which apt-get > /dev/null 2>&1; then
     pm=$(which apt-get)
     silent_inst="-yq install"
@@ -49,9 +48,9 @@ if ! command -v sudo > /dev/null 2>&1; then $pm $check_pkgs; $pm $silent_inst su
 if ! command -v wget > /dev/null 2>&1; then sudo $pm $check_pkgs; sudo $pm $silent_inst $wget_pkg; fi
 if ! command -v git > /dev/null 2>&1; then sudo $pm $check_pkgs; sudo $pm $silent_inst $git_pkg; fi
 
-# 1. Установка Docker (через официальный скрипт)
+# 1. Установка Docker (через скрипт)
 if ! command -v docker &> /dev/null; then
-    wget -qO- https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/install_docker.sh | sh
+    wget -qO- https://github.com/amnezia-vpn/amnezia-client/blob/dev/client/server_scripts/install_docker.sh | sh
     sudo usermod -aG docker $USER
     newgrp docker
 fi
