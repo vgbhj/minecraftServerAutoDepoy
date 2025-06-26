@@ -1,35 +1,49 @@
 #!/bin/bash
 
+# 0. Установка git через wget (если его нет)
+if ! command -v git &> /dev/null; then
+    echo "Установка git..."
+    GIT_VERSION="2.45.1"
+    wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-${GIT_VERSION}.tar.gz
+    tar -xf git-${GIT_VERSION}.tar.gz
+    cd git-${GIT_VERSION}
+    ./configure --prefix=/usr/local
+    make -j$(nproc)
+    sudo make install
+    cd ..
+fi
+
 # 1. Установка Docker (через официальный скрипт)
-wget -qO- https://get.docker.com/ | sh
+if ! command -v docker &> /dev/null; then
+    wget -qO- https://get.docker.com/ | sh
+    sudo usermod -aG docker $USER
+    newgrp docker
+fi
 
-# 2. Добавляем пользователя в группу docker (чтобы не нужен был sudo)
-sudo usermod -aG docker $USER
-newgrp docker  # Обновляем группу без перезагрузки
+# 2. Установка Docker Compose (бинарник)
+if ! command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_VERSION="v2.27.0"
+    sudo wget -O /usr/local/bin/docker-compose \
+        "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-$(uname -m)"
+    sudo chmod +x /usr/local/bin/docker-compose
+fi
 
-# 3. Устанавливаем Docker Compose (бинарник)
-DOCKER_COMPOSE_VERSION="v2.27.0"
-sudo wget -O /usr/local/bin/docker-compose \
-    "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-$(uname -m)"
-sudo chmod +x /usr/local/bin/docker-compose
-
-# 4. Запускаем Docker (если нет systemd)
+# 3. Запуск Docker (с проверкой systemd)
 if ! command -v systemctl &> /dev/null; then
-    sudo dockerd &  # Запуск в фоне (для систем без systemd)
+    sudo dockerd &> /dev/null &
 else
     sudo systemctl start docker
     sudo systemctl enable docker
 fi
 
-# 5. Скачиваем репозиторий (без git, через архив GitHub)
-wget https://github.com/vgbhj/minecraftServerAutoDepoy/archive/refs/heads/main.zip -O /tmp/webApp.zip
-sudo unzip /tmp/webApp.zip -d /opt/
-sudo mv /opt/minecraftServerAutoDepoy-main /opt/webApp
+# 4. Клонирование репозитория через git
+REPO="https://github.com/vgbhj/minecraftServerAutoDepoy.git"
+TARGET_DIR="/opt/webApp"
+sudo rm -rf "$TARGET_DIR" 2>/dev/null
+sudo git clone "$REPO" "$TARGET_DIR"
 
-# 6. Запускаем приложение (если main.go — это веб-сервер)
-cd /opt/webApp/webApp
-if command -v go &> /dev/null; then
-    sudo go run main.go  # Если Go установлен
-else
-    echo "Go не установлен. Установите его вручную или используйте Docker."
-fi
+# 5. Запуск через docker-compose
+cd "$TARGET_DIR"
+sudo docker-compose up -d --build
+
+echo "Готово! Приложение запущено в Docker."
