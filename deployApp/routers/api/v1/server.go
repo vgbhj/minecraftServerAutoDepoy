@@ -75,8 +75,8 @@ func Deployment(c *gin.Context) {
 
 // Структуры для Swagger документации
 type DeploymentRequest struct {
-	ServerIP string `json:"server_ip" example:"192.168.1.100" binding:"required,ip"`
-	Username string `json:"username" example:"admin" binding:"required"`
+	ServerIP string `json:"server_ip" example:"194.87.76.29" binding:"required,ip"`
+	Username string `json:"username" example:"root" binding:"required"`
 	Password string `json:"password" example:"securepassword" binding:"required"`
 }
 
