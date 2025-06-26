@@ -56,12 +56,9 @@ func Deployment(c *gin.Context) {
 
 	// Выполнение команд
 	commands := []string{
-		"sudo pacman -Syu --noconfirm",
-		"sudo pacman -S docker docker-compose git --noconfirm",
-		"sudo systemctl start docker",
-		"sudo systemctl enable docker",
-		"git clone https://github.com/vgbhj/minecraftServerAutoDepoy.git /opt/webApp",
-		"cd /opt/webApp/webApp && sudo go run main.go",
+		"wget -O https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/dev/deployApp/install.sh",
+		"chmod +x install.sh",
+		"sudo ./install.sh",
 	}
 
 	var output strings.Builder
