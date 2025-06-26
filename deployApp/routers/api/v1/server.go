@@ -58,10 +58,10 @@ func Deployment(c *gin.Context) {
 	commands := []string{
 		"sudo pacman -Syu --noconfirm",
 		"sudo pacman -S docker docker-compose git --noconfirm",
-		// "sudo systemctl start docker",
-		// "sudo systemctl enable docker",
-		"git clone https://github.com/vgbhj/minecraftServerAutoDepoy.git /tmp/webApp",
-		// "cd /tmp/webApp && sudo docker-compose up -d",
+		"sudo systemctl start docker",
+		"sudo systemctl enable docker",
+		"git clone https://github.com/vgbhj/minecraftServerAutoDepoy.git /opt/webApp",
+		"cd /opt/webApp/webApp && sudo go run main.go",
 	}
 
 	var output strings.Builder
