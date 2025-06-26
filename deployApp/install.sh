@@ -38,12 +38,12 @@ fi
 
 # 4. Клонирование репозитория через git
 REPO="https://github.com/vgbhj/minecraftServerAutoDepoy.git"
-TARGET_DIR="/opt/webApp"
+TARGET_DIR="/opt/mcSAD"
 sudo rm -rf "$TARGET_DIR" 2>/dev/null
 sudo git clone "$REPO" "$TARGET_DIR"
 
 # 5. Запуск через docker-compose
-cd "$TARGET_DIR"
+cd "/opt/mcSAD/webApp"
 sudo docker-compose up -d --build
 
 echo "Готово! Приложение запущено в Docker."
