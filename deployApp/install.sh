@@ -50,7 +50,7 @@ if ! command -v git > /dev/null 2>&1; then sudo $pm $check_pkgs; sudo $pm $silen
 
 # 1. Установка Docker (через скрипт)
 if ! command -v docker &> /dev/null; then
-    wget -qO- https://github.com/amnezia-vpn/amnezia-client/blob/dev/client/server_scripts/install_docker.sh | sh
+    wget -qO- https://raw.githubusercontent.com/amnezia-vpn/amnezia-client/refs/heads/dev/client/server_scripts/install_docker.sh| sh
     sudo usermod -aG docker $USER
     newgrp docker
 fi
