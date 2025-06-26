@@ -1,17 +1,53 @@
 #!/bin/bash
 
-# 0. Установка git через wget (если его нет)
-if ! command -v git &> /dev/null; then
-    echo "Установка git..."
-    GIT_VERSION="2.45.1"
-    wget https://mirrors.edge.kernel.org/pub/software/scm/git/git-${GIT_VERSION}.tar.gz
-    tar -xf git-${GIT_VERSION}.tar.gz
-    cd git-${GIT_VERSION}
-    ./configure --prefix=/usr/local
-    make -j$(nproc)
-    sudo make install
-    cd ..
+# Определение пакетного менеджера и команд
+if which apt-get > /dev/null 2>&1; then
+    pm=$(which apt-get)
+    silent_inst="-yq install"
+    check_pkgs="-yq update"
+    wget_pkg="wget"
+    git_pkg="git"
+    dist="debian"
+elif which dnf > /dev/null 2>&1; then
+    pm=$(which dnf)
+    silent_inst="-yq install"
+    check_pkgs="-yq check-update"
+    wget_pkg="wget"
+    git_pkg="git"
+    dist="fedora"
+elif which yum > /dev/null 2>&1; then
+    pm=$(which yum)
+    silent_inst="-y -q install"
+    check_pkgs="-y -q check-update"
+    wget_pkg="wget"
+    git_pkg="git"
+    dist="centos"
+elif which zypper > /dev/null 2>&1; then
+    pm=$(which zypper)
+    silent_inst="-nq install"
+    check_pkgs="-nq refresh"
+    wget_pkg="wget"
+    git_pkg="git"
+    dist="opensuse"
+elif which pacman > /dev/null 2>&1; then
+    pm=$(which pacman)
+    silent_inst="-Syu --noconfirm --noprogressbar --quiet"
+    check_pkgs="-Sup"
+    wget_pkg="wget"
+    git_pkg="git"
+    dist="archlinux"
+else
+    echo "Packet manager not found"
+    exit 1
 fi
+
+echo "Dist: $dist, Packet manager: $pm"
+
+if [ "$dist" = "debian" ]; then export DEBIAN_FRONTEND=noninteractive; fi
+
+if ! command -v sudo > /dev/null 2>&1; then $pm $check_pkgs; $pm $silent_inst sudo; fi
+if ! command -v wget > /dev/null 2>&1; then sudo $pm $check_pkgs; sudo $pm $silent_inst $wget_pkg; fi
+if ! command -v git > /dev/null 2>&1; then sudo $pm $check_pkgs; sudo $pm $silent_inst $git_pkg; fi
 
 # 1. Установка Docker (через официальный скрипт)
 if ! command -v docker &> /dev/null; then
