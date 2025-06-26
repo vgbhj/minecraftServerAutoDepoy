@@ -15,7 +15,7 @@ fi
 
 # 1. Установка Docker (через официальный скрипт)
 if ! command -v docker &> /dev/null; then
-    wget -qO- https://get.docker.com/ | sh
+    wget -qO- https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/install_docker.sh | sh
     sudo usermod -aG docker $USER
     newgrp docker
 fi
