@@ -5,6 +5,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - /opt/minecraft-server/:/opt/minecraft-server/
+      - /var/run/docker.sock:/var/run/docker.sock
     container_name: minecraft-webapp
     env_file:
       - .env

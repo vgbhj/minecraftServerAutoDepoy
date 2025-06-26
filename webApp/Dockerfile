@@ -15,8 +15,12 @@ FROM alpine:latest
 
 WORKDIR /app
 
+# Установим docker и docker-compose
+RUN apk add --no-cache docker docker-compose
+
 COPY --from=builder /app/webApp .
 COPY .env ./
+COPY assets ./assets
 
 EXPOSE 8080
 
