@@ -4,4 +4,4 @@ WORKDIR /data
 
 COPY . /data
 
-CMD ["java", "-Xmx2G", "-Xms2G", "-jar", "server.jar", "nogui"]
+CMD ["java", "-Xmx512MB", "-Xms512MB", "-jar", "server.jar", "nogui"]
