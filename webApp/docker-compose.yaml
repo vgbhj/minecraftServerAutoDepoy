@@ -3,6 +3,8 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    volumes:
+      - /opt/minecraft-server/:/opt/minecraft-server/
     container_name: minecraft-webapp
     env_file:
       - .env
