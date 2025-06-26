@@ -1,9 +1,12 @@
 package minecraft
 
 import (
+	"fmt"
 	"log"
+	"net/http"
 	"os/exec"
 
+	"github.com/gin-gonic/gin"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
 )
 
@@ -31,4 +34,32 @@ func StopDockerContainer() error {
 	}
 	log.Printf("Minecraft server stopped with docker-compose in %s", dir)
 	return nil
+}
+
+func RestartDockerContainer() error {
+	err := StopDockerContainer()
+	if err != nil {
+		log.Printf("Failed to stop container during restart: %v", err)
+		return fmt.Errorf("failed to stop container: %w", err)
+	}
+
+	err = StartDockerContainer()
+	if err != nil {
+		log.Printf("Failed to start container during restart: %v", err)
+		return fmt.Errorf("failed to start container: %w", err)
+	}
+
+	log.Printf("Minecraft server restarted successfully")
+	return nil
+}
+
+// @Summary Get current server configuration
+// @Description Returns currently selected server type and version
+// @Tags minecraft
+// @Produce json
+// @Success 200 {object} ServerInfo
+// @Router /api/v1/minecraft/current [get]
+func GetCurrentConfig(c *gin.Context) {
+	config := GetServerInfo()
+	c.JSON(http.StatusOK, config)
 }

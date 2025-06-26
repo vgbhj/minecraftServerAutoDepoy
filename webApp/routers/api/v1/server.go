@@ -15,8 +15,7 @@ import (
 func StartServer(c *gin.Context) {
 	if err := minecraft.StartDockerContainer(); err != nil {
 		c.JSON(500, gin.H{
-			"error":   "Failed to start Minecraft server",
-			"details": err.Error(),
+			"error": "Failed to start Minecraft server",
 		})
 		return
 	}
@@ -45,4 +44,21 @@ func StopServer(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "Minecraft server stopped successfully",
 	})
+}
+
+// @Summary      Перезагрузка сервера Minecraft
+// @Description  Перезагружает сервер Minecraft через docker-compose
+// @Tags         minecraft
+// @Produce      json
+// @Success      200  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /api/v1/server/restart [post]
+func RestartServer(c *gin.Context) {
+	if err := minecraft.RestartDockerContainer(); err != nil {
+		c.JSON(500, gin.H{
+			"error":   "Failed to restart Minecraft server",
+			"details": err.Error(),
+		})
+		return
+	}
 }
