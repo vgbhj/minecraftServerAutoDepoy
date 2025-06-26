@@ -1,0 +1,25 @@
+package routers
+
+import (
+	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+	_ "github.com/vgbhj/minecraftServerAutoDepoy/docs"
+	v1 "github.com/vgbhj/minecraftServerAutoDepoy/routers/api/v1"
+)
+
+func InitRouter() *gin.Engine {
+	r := gin.New()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
+
+	apiv1 := r.Group("/api/v1")
+
+	apiv1.Use()
+	{
+		apiv1.POST("/server/deploy", v1.Deployment)
+	}
+	return r
+}

@@ -1,0 +1,144 @@
+definitions:
+  minecraft.ServerInfo:
+    properties:
+      type:
+        type: string
+      version:
+        type: string
+    type: object
+  minecraft.VersionSelectionRequest:
+    properties:
+      core_option:
+        type: string
+      core_type:
+        type: string
+      version:
+        type: string
+    required:
+    - core_option
+    - core_type
+    - version
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/minecraft/current:
+    get:
+      description: Returns currently selected server type and version
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/minecraft.ServerInfo'
+      summary: Get current server configuration
+      tags:
+      - minecraft
+  /api/v1/minecraft/select:
+    post:
+      consumes:
+      - application/json
+      description: Saves selected Minecraft version and server type
+      parameters:
+      - description: Selection data
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/minecraft.VersionSelectionRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Select Minecraft version and core
+      tags:
+      - minecraft
+  /api/v1/minecraft/versions:
+    get:
+      description: Returns list of available Minecraft versions and server cores
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Returns versions and cores
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get available Minecraft versions and cores
+      tags:
+      - minecraft
+  /api/v1/server/restart:
+    post:
+      description: Перезагружает сервер Minecraft через docker-compose
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Перезагрузка сервера Minecraft
+      tags:
+      - minecraft
+  /api/v1/server/start:
+    post:
+      description: Запускает сервер Minecraft через docker-compose
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Запуск сервера Minecraft
+      tags:
+      - minecraft
+  /api/v1/server/stop:
+    post:
+      description: Останавливает сервер Minecraft через docker-compose
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Остановка сервера Minecraft
+      tags:
+      - minecraft
+swagger: "2.0"

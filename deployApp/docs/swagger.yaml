@@ -1,0 +1,70 @@
+definitions:
+  v1.DeploymentRequest:
+    properties:
+      password:
+        example: securepassword
+        type: string
+      server_ip:
+        example: 192.168.1.100
+        type: string
+      username:
+        example: admin
+        type: string
+    required:
+    - password
+    - server_ip
+    - username
+    type: object
+  v1.DeploymentResponse:
+    properties:
+      message:
+        example: Deployment completed successfully
+        type: string
+      output:
+        example: $ sudo pacman -Syu...
+        type: string
+    type: object
+  v1.ErrorResponse:
+    properties:
+      details:
+        example: 'dial tcp 192.168.1.100:22: connect: connection refused'
+        type: string
+      error:
+        example: SSH connection failed
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /api/v1/server/deploy:
+    post:
+      consumes:
+      - application/json
+      description: Deploys the Minecraft server web application on the target server
+        via SSH
+      parameters:
+      - description: SSH connection details
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/v1.DeploymentRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.DeploymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Deploy Minecraft server
+      tags:
+      - Deployment
+swagger: "2.0"
