@@ -1,6 +1,9 @@
 package routers
 
 import (
+	"net/http"
+	"path/filepath"
+
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
@@ -29,5 +32,12 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/minecraft/select", minecraft.HandleVersionSelection)
 		apiv1.GET("/minecraft/current", minecraft.GetCurrentConfig)
 	}
+	distPath := filepath.Join(".", "frontend", "dist")
+	r.StaticFS("/assets", http.Dir(filepath.Join(distPath, "assets")))
+	r.StaticFile("/", filepath.Join(distPath, "index.html"))
+	r.NoRoute(func(c *gin.Context) {
+		c.File(filepath.Join(distPath, "index.html"))
+	})
+
 	return r
 }
