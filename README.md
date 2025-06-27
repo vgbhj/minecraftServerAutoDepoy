@@ -9,37 +9,29 @@ This project provides a fully automated solution for deploying a Minecraft serve
 
 minecraftServerAutoDepoy is designed to simplify the process of hosting and managing Minecraft servers. With just a few details about your remote server, our application will automatically install all necessary dependencies, configure the environment, and deploy a ready-to-use Minecraft server with a modern web dashboard.
 
-### Key Features
+Key Features
 
 - **One-Click Remote Deployment:**  
   Deploy a Minecraft server on any supported Linux VPS or dedicated server by simply providing SSH credentials.
-
 - **Web Registration & Admin Panel:**  
   Players can register through a web interface, and administrators have access to a powerful dashboard for server management.
-
 - **Automated Infrastructure Setup:**  
   Installs Docker, Docker Compose, and all required packages automatically, ensuring a consistent and reliable environment.
-
 - **Cross-Distribution Support:**  
   Works with major Linux distributions (Debian/Ubuntu, Fedora, CentOS, openSUSE, Arch Linux).
-
 - **Secure SSH-Based Installation:**  
   All operations are performed over a secure SSH connection; no manual intervention required.
-
 - **Easy Updates & Maintenance:**  
   The web panel allows for easy server restarts, updates, and configuration changes.
-
 - **Extensible & Open Source:**  
   Built with extensibility in mind, allowing for future integration of mods, plugins, and additional management features.
 
-### How It Works
+ How It Works
 
 1. **Provide Server Details:**  
    Enter the IP address, username, and password of your remote server in the web interface.
-
 2. **Automated Deployment:**  
    The backend connects to your server via SSH and runs an installation script that sets up Docker, pulls the Minecraft server image, and configures the web panel.
-
 3. **Manage Your Server:**  
    Access the web dashboard to manage players, configure server settings, and monitor server status.
 
