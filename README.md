@@ -7,7 +7,7 @@ This project provides a fully automated solution for deploying a Minecraft serve
 
 ## Project Overview
 
-minecraftServerAutoDepoy is designed to simplify the process of hosting and managing Minecraft servers. With just a few details about your remote server, our application will automatically install all necessary dependencies, configure the environment, and deploy a ready-to-use Minecraft server with a modern web dashboard.
+**minecraftServerAutoDepoy** is designed to simplify the process of hosting and managing Minecraft servers. With just a few details about your remote server, our application will automatically install all necessary dependencies, configure the environment, and deploy a ready-to-use Minecraft server with a modern web dashboard.
 
 Key Features
 
