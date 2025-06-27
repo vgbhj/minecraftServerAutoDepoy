@@ -77,11 +77,11 @@ const docTemplate = `{
                 },
                 "server_ip": {
                     "type": "string",
-                    "example": "192.168.1.100"
+                    "example": "194.87.76.29"
                 },
                 "username": {
                     "type": "string",
-                    "example": "admin"
+                    "example": "root"
                 }
             }
         },

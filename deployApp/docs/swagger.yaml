@@ -5,10 +5,10 @@ definitions:
         example: securepassword
         type: string
       server_ip:
-        example: 192.168.1.100
+        example: 194.87.76.29
         type: string
       username:
-        example: admin
+        example: root
         type: string
     required:
     - password
