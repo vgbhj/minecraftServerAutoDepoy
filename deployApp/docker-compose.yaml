@@ -1,0 +1,14 @@
+services:
+  deployapp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    container_name: minecraft-delpoy
+    env_file:
+      - .env
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+    working_dir: /app
