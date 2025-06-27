@@ -2,6 +2,8 @@ version: '3.8'
 
 services:
   app:
+    ports:
+      - "8080:8080"
     build:
       context: .
       dockerfile: Dockerfile
@@ -24,8 +26,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/conf.d:/etc/nginx/conf.d  # Только conf.d (основной nginx.conf не перезаписываем)
       - ./certbot/www:/var/www/certbot
       - ./certbot/conf:/etc/letsencrypt
     depends_on:
@@ -42,7 +43,7 @@ services:
       - nginx
     networks:
       - app-network
-    command: certonly --webroot --webroot-path=/var/www/certbot --email al6ity@gmail.com --agree-tos --no-eff-email -d mcsad.sytes.net --dry-run
+    command: certonly --webroot --webroot-path=/var/www/certbot --email al6ity@gmail.com --agree-tos --no-eff-email -d mcsad.tw1.ru --force-renewal
 
 networks:
   app-network:
