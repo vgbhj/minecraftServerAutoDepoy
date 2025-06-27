@@ -1,3 +1,5 @@
+![inqSerdiagram](https://github.com/vgbhj/minecraftServerAutoDepoy/blob/main/other/banner.png?raw=true)
+
 # minecraftServerAutoDepoy
 
 Welcome to **minecraftServerAutoDepoy**!  
