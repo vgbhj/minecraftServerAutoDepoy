@@ -36,7 +36,7 @@ Key Features
    Access the web dashboard to manage players, configure server settings, and monitor server status.
 
 ### Installation & Setup
-
+<br><br>
 You can deploy minecraftServerAutoDepoy in two ways:
 
 #### 1. Deploy via Our Website *(Recommended)*
