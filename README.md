@@ -1,6 +1,6 @@
 ![inqSerdiagram](https://github.com/vgbhj/minecraftServerAutoDepoy/blob/main/other/banner.png?raw=true)
 
-# minecraftServerAutoDepoy
+# mcSAD
 
 Welcome to **minecraftServerAutoDepoy**!  
 This project provides a fully automated solution for deploying a Minecraft server with a web interface and admin panel, making it easy for anyone to set up and manage a Minecraft server remotely.
