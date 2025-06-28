@@ -11,27 +11,27 @@ import (
 
 func StartDockerContainer() error {
 	dir := setting.MinecraftSetting.ServerDir
-	cmd := exec.Command("docker-compose", "up", "-d")
+	cmd := exec.Command("podman-compose", "up", "-d")
 	cmd.Dir = dir
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Printf("docker-compose output: %s", string(output))
+		log.Printf("podman-compose output: %s", string(output))
 		return err
 	}
-	log.Printf("Minecraft server started with docker-compose in %s", dir)
+	log.Printf("Minecraft server started with podman-compose in %s", dir)
 	return nil
 }
 
 func StopDockerContainer() error {
 	dir := setting.MinecraftSetting.ServerDir
-	cmd := exec.Command("docker-compose", "down")
+	cmd := exec.Command("podman-compose", "down")
 	cmd.Dir = dir
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		log.Printf("docker-compose output: %s", string(output))
+		log.Printf("podman-compose output: %s", string(output))
 		return err
 	}
-	log.Printf("Minecraft server stopped with docker-compose in %s", dir)
+	log.Printf("Minecraft server stopped with podman-compose in %s", dir)
 	return nil
 }
 
@@ -53,7 +53,7 @@ func RestartDockerContainer() error {
 }
 
 func IsDockerContainerRunning(containerName string) (bool, error) {
-	out, err := exec.Command("docker", "ps", "--filter", "name="+containerName, "--filter", "status=running", "--format", "{{.Names}}").Output()
+	out, err := exec.Command("podman", "ps", "--filter", "name="+containerName, "--filter", "status=running", "--format", "{{.Names}}").Output()
 	if err != nil {
 		return false, err
 	}
