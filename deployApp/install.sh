@@ -1,13 +1,12 @@
 #!/bin/bash
 
-# Функция для вывода ошибки и завершения с кодом 500
 error_exit() {
     echo "500"
     echo "Ошибка: $1" >&2
     exit 1
 }
 
-# Проверка пакетного менеджера
+
 if which apt-get > /dev/null 2>&1; then
     pm=$(which apt-get)
     silent_inst="-yq install"
@@ -51,19 +50,19 @@ echo "Dist: $dist, Packet manager: $pm"
 
 if [ "$dist" = "debian" ]; then export DEBIAN_FRONTEND=noninteractive; fi
 
-# Установка необходимых пакетов
+
 if ! command -v sudo > /dev/null 2>&1; then $pm $check_pkgs || error_exit "Не удалось обновить репозитории"; $pm $silent_install sudo || error_exit "Не удалось установить sudo"; fi
 if ! command -v wget > /dev/null 2>&1; then sudo $pm $check_pkgs || error_exit "Не удалось обновить репозитории"; sudo $pm $silent_inst $wget_pkg || error_exit "Не удалось установить wget"; fi
 if ! command -v git > /dev/null 2>&1; then sudo $pm $check_pkgs || error_exit "Не удалось обновить репозитории"; sudo $pm $silent_inst $git_pkg || error_exit "Не удалось установить git"; fi
 
-# 1. Установка Docker
+
 if ! command -v docker &> /dev/null; then
     wget -qO- https://raw.githubusercontent.com/amnezia-vpn/amnezia-client/refs/heads/dev/client/server_scripts/install_docker.sh | sh || error_exit "Не удалось установить Docker"
     sudo usermod -aG docker $USER || error_exit "Не удалось добавить пользователя в группу docker"
     newgrp docker
 fi
 
-# 2. Установка Docker Compose
+
 if ! command -v docker-compose &> /dev/null; then
     DOCKER_COMPOSE_VERSION="v2.27.0"
     sudo wget -O /usr/local/bin/docker-compose \
@@ -71,7 +70,7 @@ if ! command -v docker-compose &> /dev/null; then
     sudo chmod +x /usr/local/bin/docker-compose || error_exit "Не удалось сделать Docker Compose исполняемым"
 fi
 
-# 3. Запуск Docker
+
 if ! command -v systemctl &> /dev/null; then
     sudo dockerd &> /dev/null &
 else
@@ -79,20 +78,22 @@ else
     sudo systemctl enable docker || error_exit "Не удалось добавить Docker в автозагрузку"
 fi
 
-# 4. Клонирование репозитория
+
 REPO="https://github.com/vgbhj/minecraftServerAutoDepoy.git"
 TARGET_DIR="/opt/mcSAD"
 sudo rm -rf "$TARGET_DIR" 2>/dev/null
 sudo git clone "$REPO" "$TARGET_DIR" || error_exit "Не удалось клонировать репозиторий"
 
-# 5. Запуск через docker-compose
+
 cd "/opt/mcSAD/webApp" || error_exit "Не удалось перейти в директорию проекта"
 sudo docker-compose up -d --build || error_exit "Не удалось запустить docker-compose"
 
-# Получаем IP-адрес сервера
-SERVER_IP=$(hostname -I | awk '{print $1}')
+SERVER_IP=$(ip route get 8.8.8.8 | grep -oP 'src \K[\d.]+')
 if [ -z "$SERVER_IP" ]; then
-    SERVER_IP="localhost"
+    SERVER_IP=$(hostname -I | awk '{print $1}')  
+fi
+if [ -z "$SERVER_IP" ]; then
+    SERVER_IP="localhost"  
 fi
 
 echo "200"
