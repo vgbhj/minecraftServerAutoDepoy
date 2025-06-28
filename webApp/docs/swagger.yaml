@@ -1,11 +1,4 @@
 definitions:
-  minecraft.ServerInfo:
-    properties:
-      type:
-        type: string
-      version:
-        type: string
-    type: object
   minecraft.VersionSelectionRequest:
     properties:
       core_option:
@@ -19,6 +12,11 @@ definitions:
     - core_type
     - version
     type: object
+  v1.ServerInfo:
+    properties:
+      version:
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -31,7 +29,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/minecraft.ServerInfo'
+            $ref: '#/definitions/v1.ServerInfo'
       summary: Get current server configuration
       tags:
       - minecraft

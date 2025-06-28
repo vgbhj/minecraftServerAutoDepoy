@@ -29,7 +29,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/minecraft.ServerInfo"
+                            "$ref": "#/definitions/v1.ServerInfo"
                         }
                     }
                 }
@@ -198,17 +198,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "minecraft.ServerInfo": {
-            "type": "object",
-            "properties": {
-                "type": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
         "minecraft.VersionSelectionRequest": {
             "type": "object",
             "required": [
@@ -223,6 +212,14 @@ const docTemplate = `{
                 "core_type": {
                     "type": "string"
                 },
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.ServerInfo": {
+            "type": "object",
+            "properties": {
                 "version": {
                     "type": "string"
                 }

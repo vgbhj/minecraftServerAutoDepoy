@@ -3,7 +3,12 @@ package v1
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/minecraft"
+	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
 )
+
+type ServerInfo struct {
+	Version string `json:"version"`
+}
 
 // @Summary      Запуск сервера Minecraft
 // @Description  Запускает сервер Minecraft через docker-compose
@@ -61,4 +66,33 @@ func RestartServer(c *gin.Context) {
 		})
 		return
 	}
+}
+
+// @Summary Get current server configuration
+// @Description Returns currently selected server type and version
+// @Tags minecraft
+// @Produce json
+// @Success 200 {object} ServerInfo
+// @Router /api/v1/minecraft/current [get]
+func GetCurrentVersion(c *gin.Context) {
+	jarPath := setting.MinecraftSetting.ServerDir + "server.jar"
+	if jarPath == "" {
+		c.JSON(500, gin.H{
+			"error": "MINECRAFT_JAR_PATH is not set in environment",
+		})
+		return
+	}
+
+	version, err := minecraft.GetMinecraftJarVersion(jarPath)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error":   "Failed to get Minecraft server version",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"version": version,
+	})
 }
