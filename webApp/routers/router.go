@@ -9,6 +9,7 @@ import (
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	_ "github.com/vgbhj/minecraftServerAutoDepoy/docs"
+	"github.com/vgbhj/minecraftServerAutoDepoy/middleware"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/minecraft"
 	v1 "github.com/vgbhj/minecraftServerAutoDepoy/routers/api/v1"
 )
@@ -21,7 +22,7 @@ func InitRouter() *gin.Engine {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 
-	apiv1 := r.Group("/api/v1")
+	apiv1 := r.Group("/api/v1", middleware.AdminAuthMiddleware())
 
 	apiv1.Use()
 	{

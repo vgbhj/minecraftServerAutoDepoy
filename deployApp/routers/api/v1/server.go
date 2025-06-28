@@ -75,15 +75,12 @@ func Deployment(c *gin.Context) {
 	var adminPanel, adminPassword string
 
 	for i := len(lines) - 1; i >= 0; i-- {
-		line := lines[i]
-		if strings.HasPrefix(line, "Admin panel is available at:") {
+		line := strings.TrimSpace(lines[i])
+		if adminPanel == "" && strings.HasPrefix(line, "Admin panel is available at:") {
 			adminPanel = line
 		}
-		if strings.HasPrefix(line, "Admin password:") {
+		if adminPassword == "" && strings.HasPrefix(line, "Admin password:") {
 			adminPassword = line
-		}
-		if adminPanel != "" && adminPassword != "" {
-			break
 		}
 	}
 
