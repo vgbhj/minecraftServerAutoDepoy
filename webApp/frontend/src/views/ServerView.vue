@@ -4,7 +4,7 @@ import axios from 'axios'
 
 const status = ref('Loading...')
 const version = ref('...')
-const serverIp = ref(window.location.host) // Use browser host as server IP
+const serverIp = ref(window.location.host.split(':')[0])
 const loading = ref(false)
 const error = ref('')
 

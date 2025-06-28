@@ -17,7 +17,7 @@ const isActiveLink = (routePath) => route.path === routePath
 <template>
   <aside class="h-screen w-56 bg-gray-900 flex flex-col py-6 px-2 fixed left-0 top-0 z-20">
     <div class="flex items-center gap-2 mb-8 px-2">
-      <img src="@/assets/img/logo.png" class="w-8 h-8" alt="Logo" />
+      <img src="@/assets/img/logo.png" class="w-12 h-12" alt="Logo" />
       <span class="text-white text-xl font-bold tracking-wide">mcSAD</span>
     </div>
     <nav class="flex-1">
