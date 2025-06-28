@@ -7,8 +7,8 @@ let ws
 
 onMounted(() => {
 
-ws = new WebSocket("ws://localhost:8080/api/v1/console/stream");
-  // ws = new WebSocket(`ws://${window.location.host}/api/v1/console/stream`)
+// ws = new WebSocket("ws://localhost:8080/api/v1/console/stream");
+  ws = new WebSocket(`ws://${window.location.host}/api/v1/console/stream`)
   ws.onmessage = (event) => {
     logs.value += event.data
   }
