@@ -96,6 +96,7 @@ sudo git clone "$REPO" "$TARGET_DIR" || error_exit "Failed to clone repository"
 
 # Deploy application
 cd "/opt/mcSAD/webApp" || error_exit "Failed to enter project directory"
+sudo docker-compose down || error_exit "Failed to stop and remove existing containers"
 sudo docker-compose up -d --build || error_exit "Failed to run docker-compose"
 
 # Get server IP
