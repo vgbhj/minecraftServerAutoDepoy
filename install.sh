@@ -65,46 +65,27 @@ if ! command -v git > /dev/null 2>&1; then
     sudo $pm $silent_inst $git_pkg || error_exit "Failed to install git"; 
 fi
 
-# Install Podman if not present
-if ! command -v podman &> /dev/null; then
-    sudo $pm $check_pkgs || error_exit "Failed to update repositories"
-    sudo $pm $silent_inst podman || error_exit "Failed to install podman"
+# Install Docker if not present
+if ! command -v docker &> /dev/null; then
+    wget -qO- https://raw.githubusercontent.com/amnezia-vpn/amnezia-client/refs/heads/dev/client/server_scripts/install_docker.sh | sh || error_exit "Failed to install Docker"
+    sudo usermod -aG docker $USER || error_exit "Failed to add user to docker group"
+    newgrp docker
 fi
 
-# Install pip3 if not present
-if ! command -v pip3 &> /dev/null; then
-    if [ "$dist" = "debian" ] || [ "$dist" = "ubuntu" ]; then
-        sudo $pm $check_pkgs || error_exit "Failed to update repositories"
-        sudo $pm $silent_inst python3-pip || error_exit "Failed to install pip3"
-    elif [ "$dist" = "fedora" ] || [ "$dist" = "centos" ]; then
-        sudo $pm $check_pkgs || error_exit "Failed to update repositories"
-        sudo $pm $silent_inst python3-pip || error_exit "Failed to install pip3"
-    elif [ "$dist" = "opensuse" ]; then
-        sudo $pm $check_pkgs || error_exit "Failed to update repositories"
-        sudo $pm $silent_inst python3-pip || error_exit "Failed to install pip3"
-    elif [ "$dist" = "archlinux" ]; then
-        sudo $pm $check_pkgs || error_exit "Failed to update repositories"
-        sudo $pm $silent_inst python-pip || error_exit "Failed to install pip3"
-    else
-        error_exit "pip3 package not available for your distribution"
-    fi
+# Install Docker Compose if not present
+if ! command -v docker-compose &> /dev/null; then
+    DOCKER_COMPOSE_VERSION="v2.27.0"
+    sudo wget -O /usr/local/bin/docker-compose \
+        "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-linux-$(uname -m)" || error_exit "Failed to download Docker Compose"
+    sudo chmod +x /usr/local/bin/docker-compose || error_exit "Failed to make Docker Compose executable"
 fi
 
-# Install podman-compose if not present
-if ! command -v podman-compose &> /dev/null; then
-    sudo pip3 install podman-compose || error_exit "Failed to install podman-compose"
-fi
-
-# Ensure /usr/local/bin is in PATH for current and future sessions
-if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
-    export PATH="/usr/local/bin:$PATH"
-    echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bashrc
-    echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.profile
-fi
-
-# Start Podman service (for rootless, may not be needed)
-if command -v systemctl &> /dev/null; then
-    systemctl --user start podman.socket || true
+# Start Docker service
+if ! command -v systemctl &> /dev/null; then
+    sudo dockerd &> /dev/null &
+else
+    sudo systemctl start docker || error_exit "Failed to start Docker"
+    sudo systemctl enable docker || error_exit "Failed to enable Docker autostart"
 fi
 
 # Clone repository
@@ -115,9 +96,8 @@ sudo git clone "$REPO" "$TARGET_DIR" || error_exit "Failed to clone repository"
 
 # Deploy application
 cd "/opt/mcSAD/webApp" || error_exit "Failed to enter project directory"
-export PATH="/usr/local/bin:$PATH"
-podman-compose down || error_exit "Failed to stop and remove existing containers"
-podman-compose up -d --build || error_exit "Failed to run podman-compose"
+sudo docker-compose down || error_exit "Failed to stop and remove existing containers"
+sudo docker-compose up -d --build || error_exit "Failed to run docker-compose"
 
 # Get server IP
 SERVER_IP=$(ip route get 8.8.8.8 | grep -oP 'src \K[\d.]+')
@@ -129,6 +109,6 @@ if [ -z "$SERVER_IP" ]; then
 fi
 
 echo "200"
-echo "Done! The application has been successfully deployed in Podman."
+echo "Done! The application has been successfully deployed in Docker."
 echo "Admin panel is available at: http://${SERVER_IP}:8080"
 exit 0
