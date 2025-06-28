@@ -140,8 +140,10 @@ func Setup() {
 	assetsDir := filepath.Join(".", "assets")
 	dockerfileSrc := filepath.Join(assetsDir, "Dockerfile")
 	dockerComposeSrc := filepath.Join(assetsDir, "docker-compose.yaml")
+	serverPropertiesSrc := filepath.Join(assetsDir, "server.properties")
 	dockerfileDst := filepath.Join(dir, "Dockerfile")
 	dockerComposeDst := filepath.Join(dir, "docker-compose.yaml")
+	serverPropertiesDst := filepath.Join(dir, "server.properties")
 
 	if err := copyFileIfNotExists(dockerfileSrc, dockerfileDst); err != nil {
 		log.Printf("Failed to copy Dockerfile: %v", err)
@@ -152,5 +154,10 @@ func Setup() {
 		log.Printf("Failed to copy docker-compose.yaml: %v", err)
 	} else {
 		log.Printf("docker-compose.yaml checked/copied to %s", dockerComposeDst)
+	}
+	if err := copyFileIfNotExists(serverPropertiesSrc, serverPropertiesDst); err != nil {
+		log.Printf("Failed to copy server.properties: %v", err)
+	} else {
+		log.Printf("server.properties checked/copied to %s", serverPropertiesDst)
 	}
 }

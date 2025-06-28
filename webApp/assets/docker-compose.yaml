@@ -6,6 +6,7 @@ services:
     container_name: minecraft-server
     ports:
       - "25565:25565"
+      - "25575:25575" 
     volumes:
       - .:/data
     restart: unless-stopped

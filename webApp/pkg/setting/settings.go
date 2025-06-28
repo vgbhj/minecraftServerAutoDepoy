@@ -17,7 +17,10 @@ type Server struct {
 }
 
 type Minecraft struct {
-	ServerDir string `env:"MINECRAFT_SERVER_DIR,required"`
+	ServerDir    string `env:"MINECRAFT_SERVER_DIR,required"`
+	ServerIP     string `env:"MINECRAFT_SERVER_IP,required"`
+	RconPort     string `env:"MINECRAFT_RCON_PORT,required"`
+	RconPassword string `env:"MINECRAFT_RCON_PASSWORD,required"`
 }
 
 var (

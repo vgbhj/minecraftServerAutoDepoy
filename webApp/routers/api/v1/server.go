@@ -2,13 +2,11 @@ package v1
 
 import (
 	"bufio"
-	"net/http"
 	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/minecraft"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
 )
@@ -269,39 +267,4 @@ func UpdateServerProperties(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"message": "server.properties updated",
 	})
-}
-
-var upgrader = websocket.Upgrader{
-	CheckOrigin: func(r *http.Request) bool { return true },
-}
-
-func ConsoleStream(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		return
-	}
-	defer conn.Close()
-
-	cmd := exec.Command("docker", "logs", "-f", "minecraft-server")
-	stdout, err := cmd.StdoutPipe()
-	if err != nil {
-		return
-	}
-	if err := cmd.Start(); err != nil {
-		return
-	}
-	defer cmd.Process.Kill()
-
-	buf := make([]byte, 1024)
-	for {
-		n, err := stdout.Read(buf)
-		if n > 0 {
-			if err := conn.WriteMessage(websocket.TextMessage, buf[:n]); err != nil {
-				break
-			}
-		}
-		if err != nil {
-			break
-		}
-	}
 }
