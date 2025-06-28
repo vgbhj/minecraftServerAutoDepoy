@@ -60,9 +60,11 @@ func Deployment(c *gin.Context) {
 
 	output, err := pkg.DeployCommands(client, commands)
 	if err != nil {
+		tailCmd := []string{"tail -n 10 /tmp/minecraft_deploy.log"}
+		tailOutput, _ := pkg.DeployCommands(client, tailCmd)
 		c.JSON(http.StatusInternalServerError, ErrorResponse{
 			Error:   "Deployment failed",
-			Details: fmt.Sprintf("%v\nLast 500 chars:\n%s", err, output),
+			Details: fmt.Sprintf("%v\nLast 10 lines of log:\n%s", err, tailOutput),
 		})
 		return
 	}
