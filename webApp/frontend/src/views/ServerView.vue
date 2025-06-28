@@ -4,6 +4,7 @@ import axios from 'axios'
 
 const status = ref('Loading...')
 const version = ref('...')
+const serverIp = ref('...')
 const loading = ref(false)
 const error = ref('')
 
@@ -25,6 +26,15 @@ async function fetchVersion() {
   }
 }
 
+async function fetchIp() {
+  try {
+    const res = await axios.get('/api/v1/server/ip')
+    serverIp.value = res.data.ip
+  } catch (e) {
+    serverIp.value = 'Error'
+  }
+}
+
 async function serverAction(action) {
   loading.value = true
   error.value = ''
@@ -40,6 +50,7 @@ async function serverAction(action) {
 onMounted(() => {
   fetchStatus()
   fetchVersion()
+  fetchIp()
 })
 </script>
 
@@ -76,9 +87,15 @@ onMounted(() => {
         </button>
       </div>
       <div v-if="error" class="text-red-400 mb-4">{{ error }}</div>
-      <div class="mt-6 text-white">
-        <div class="font-semibold">Server version:</div>
-        <div class="text-lg">{{ version }}</div>
+      <div class="mt-6 text-white space-y-2">
+        <div>
+          <span class="font-semibold">Server IP: </span>
+          <span class="text-lg">{{ serverIp }}</span>
+        </div>
+        <div>
+          <span class="font-semibold">Server version: </span>
+          <span class="text-lg">{{ version }}</span>
+        </div>
       </div>
     </div>
   </div>

@@ -100,6 +100,38 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/server/ip": {
+            "get": {
+                "description": "Returns the host server's external IP address",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "minecraft"
+                ],
+                "summary": "Get host server IP",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/server/restart": {
             "post": {
                 "description": "Перезагружает сервер Minecraft через docker-compose",

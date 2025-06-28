@@ -82,6 +82,27 @@ paths:
       summary: Get available Minecraft versions and cores
       tags:
       - minecraft
+  /api/v1/server/ip:
+    get:
+      description: Returns the host server's external IP address
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get host server IP
+      tags:
+      - minecraft
   /api/v1/server/restart:
     post:
       description: Перезагружает сервер Minecraft через docker-compose

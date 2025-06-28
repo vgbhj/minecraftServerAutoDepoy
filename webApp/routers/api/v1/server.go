@@ -1,6 +1,9 @@
 package v1
 
 import (
+	"os/exec"
+	"strings"
+
 	"github.com/gin-gonic/gin"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/minecraft"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
@@ -123,4 +126,33 @@ func GetServerStatus(c *gin.Context) {
 	}
 
 	c.JSON(200, ServerStatus{Status: status})
+}
+
+// @Summary Get host server IP
+// @Description Returns the host server's external IP address
+// @Tags minecraft
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/v1/server/ip [get]
+func GetServerIP(c *gin.Context) {
+	cmd := exec.Command("sh", "-c", `ip route get 8.8.8.8 | grep -oP 'src \K[\d.]+'`)
+	out, err := cmd.Output()
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error":   "Failed to get server IP",
+			"details": err.Error(),
+		})
+		return
+	}
+	ip := strings.TrimSpace(string(out))
+	if ip == "" {
+		c.JSON(500, gin.H{
+			"error": "Could not determine server IP",
+		})
+		return
+	}
+	c.JSON(200, gin.H{
+		"ip": ip,
+	})
 }
