@@ -2,6 +2,7 @@ package v1
 
 import (
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -22,7 +23,6 @@ import (
 func Deployment(c *gin.Context) {
 	var req DeploymentRequest
 
-	// Валидация входных данных
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, ErrorResponse{
 			Error:   "Invalid request body",
@@ -31,7 +31,6 @@ func Deployment(c *gin.Context) {
 		return
 	}
 
-	// Конфигурация SSH
 	config := &ssh.ClientConfig{
 		User: req.Username,
 		Auth: []ssh.AuthMethod{
@@ -41,7 +40,6 @@ func Deployment(c *gin.Context) {
 		Timeout:         30 * time.Second,
 	}
 
-	// Подключение к серверу
 	client, err := ssh.Dial("tcp", req.ServerIP+":22", config)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, ErrorResponse{
@@ -60,20 +58,26 @@ func Deployment(c *gin.Context) {
 
 	output, err := pkg.DeployCommands(client, commands)
 	if err != nil {
+		lines := strings.Split(output, "\n")
+		start := len(lines) - 15
+		if start < 0 {
+			start = 0
+		}
+		truncatedOutput := strings.Join(lines[start:], "\n")
+
 		c.JSON(http.StatusInternalServerError, ErrorResponse{
 			Error:   "Deployment failed",
-			Details: output,
+			Details: truncatedOutput,
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, DeploymentResponse{
 		Message: "Deployment completed successfully",
-		Output:  output,
+		Output:  "Success",
 	})
 }
 
-// Структуры для Swagger документации
 type DeploymentRequest struct {
 	ServerIP string `json:"server_ip" example:"194.87.76.29" binding:"required,ip"`
 	Username string `json:"username" example:"root" binding:"required"`
