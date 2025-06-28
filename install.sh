@@ -30,7 +30,7 @@ elif which zypper > /dev/null 2>&1; then
     dist="opensuse"
 elif which pacman > /dev/null 2>&1; then
     pm=$(which pacman)
-    silent_inst="-S --noconfirm --noprogressbar --quiet"
+    silent_inst="-Sy --noconfirm --noprogressbar --quiet"
     check_pkgs="-Sup"
     wget_pkg="wget"
     git_pkg="git"

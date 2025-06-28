@@ -51,17 +51,19 @@ You can deploy minecraftServerAutoDepoy in two ways:
 
 #### 2. Manual Deployment on Your Own Server
 
-1. **Clone this repository:**
+1. **Download the installation script:**
    ```sh
-   git clone https://github.com/vgbhj/minecraftServerAutoDepoy.git
-   cd minecraftServerAutoDepoy
+   wget https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/install.sh
    ```
 
-2. **Run the installation script on your server:**
+2. **Make the script executable:**
    ```sh
-   cd deployApp
    chmod +x install.sh
-   ./install.sh
+   ```
+
+3. **Run the installation script with sudo:**
+   ```sh
+   sudo ./install.sh
    ```
 
    This script will automatically install all dependencies and launch the webApp locally.
