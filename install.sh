@@ -73,7 +73,17 @@ fi
 
 # Install podman-compose if not present
 if ! command -v podman-compose &> /dev/null; then
-    sudo pip3 install podman-compose || error_exit "Failed to install podman-compose"
+    if [ "$dist" = "debian" ] || [ "$dist" = "ubuntu" ]; then
+        sudo $pm $check_pkgs || error_exit "Failed to update repositories"
+        sudo $pm $silent_inst podman-compose || error_exit "Failed to install podman-compose"
+    else
+        # Fallback to pip3 if no package available
+        if command -v pip3 &> /dev/null; then
+            sudo pip3 install podman-compose || error_exit "Failed to install podman-compose"
+        else
+            error_exit "pip3 not found and podman-compose package not available"
+        fi
+    fi
 fi
 
 # Start Podman service (for rootless, may not be needed)
