@@ -1,11 +1,13 @@
 #!/bin/bash
 
+# Функция для вывода ошибки и завершения с кодом 500
 error_exit() {
     echo "500"
     echo "Ошибка: $1" >&2
     exit 1
 }
 
+# Проверка пакетного менеджера
 if which apt-get > /dev/null 2>&1; then
     pm=$(which apt-get)
     silent_inst="-yq install"
@@ -77,12 +79,13 @@ else
     sudo systemctl enable docker || error_exit "Не удалось добавить Docker в автозагрузку"
 fi
 
+# 4. Клонирование репозитория
 REPO="https://github.com/vgbhj/minecraftServerAutoDepoy.git"
 TARGET_DIR="/opt/mcSAD"
 sudo rm -rf "$TARGET_DIR" 2>/dev/null
 sudo git clone "$REPO" "$TARGET_DIR" || error_exit "Не удалось клонировать репозиторий"
 
-
+# 5. Запуск через docker-compose
 cd "/opt/mcSAD/webApp" || error_exit "Не удалось перейти в директорию проекта"
 sudo docker-compose up -d --build || error_exit "Не удалось запустить docker-compose"
 
