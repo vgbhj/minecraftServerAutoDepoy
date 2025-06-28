@@ -56,7 +56,7 @@ onMounted(() => {
 
 <template>
   <div class="min-h-screen flex items-center justify-center bg-gray-900">
-    <div class="max-w-xl mx-auto mt-10 p-8 bg-gray-800 rounded-lg shadow-lg">
+    <div class="max-w-xl mx-auto mt-10 p-8 bg-gray-800 rounded-lg">
       <h2 class="text-2xl font-bold mb-6 text-white flex items-center gap-2">
         Server status:
         <span :class="status==='Online' ? 'text-green-400' : status==='Offline' ? 'text-red-400' : 'text-yellow-400'">
