@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import NotFoundView from '@/views/NotFoundView.vue'
 import ServerView from '@/views/ServerView.vue'
-import SettingsVue from '@/views/SettingsVue.vue'
+import SettingsView from '@/views/SettingsView.vue'
+import ConsoleView from '@/views/ConsoleView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -14,7 +15,12 @@ const router = createRouter({
     {
       path: '/settings',
       name: 'settings',
-      component: SettingsVue,
+      component: SettingsView,
+    },
+    {
+      path: '/console',
+      name: 'console',
+      component: ConsoleView,
     },
     {
         path: '/:cathAll(.*)',

@@ -93,7 +93,7 @@ onMounted(fetchProperties)
 
 <template>
   <div class="min-h-screen bg-gray-900 flex items-center justify-center">
-    <div class="w-full max-w-5xl bg-gray-800 rounded-xl shadow-lg p-8 border border-gray-700">
+    <div class="w-full max-w-5xl bg-gray-800 rounded-xl shadow-lg p-8">
       <h2 class="text-3xl font-bold mb-8 text-white text-center tracking-wide">Server Properties</h2>
       <form @submit.prevent="saveProperties" v-if="!loading">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
