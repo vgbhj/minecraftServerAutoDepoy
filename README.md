@@ -5,6 +5,9 @@
 Welcome to **minecraftServerAutoDepoy**!  
 This project provides a fully automated solution for deploying a Minecraft server with a web interface and admin panel, making it easy for anyone to set up and manage a Minecraft server remotely.
 
+https://mcsad.mkrdnk.ru/
+22-hackathon
+
 ## Project Overview
 
 **minecraftServerAutoDepoy** is designed to simplify the process of hosting and managing Minecraft servers. With just a few details about your remote server, our application will automatically install all necessary dependencies, configure the environment, and deploy a ready-to-use Minecraft server with a modern web dashboard.
@@ -41,7 +44,7 @@ You can deploy minecraftServerAutoDepoy in two ways:
 
 #### 1. Deploy via Our Website *(Recommended)*
 
-- Visit [https://minecraft-auto-deploy.example.com](https://minecraft-auto-deploy.example.com) *(coming soon)*.
+- Visit [https://mcsad.mkrdnk.ru/](https://mcsad.mkrdnk.ru/).
 - Enter your target server's SSH details in the web interface.
 - The system will automatically connect to your server, install all dependencies, and deploy the Minecraft server with the web dashboard.
 - Manage your server directly from the website.
