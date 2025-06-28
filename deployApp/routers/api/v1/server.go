@@ -55,7 +55,7 @@ func Deployment(c *gin.Context) {
 		"curl -s -O https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/deployApp/install.sh",
 		"chmod +x install.sh",
 		"sudo ./install.sh > /tmp/minecraft_deploy.log 2>&1",
-		"cat /tmp/minecraft_deploy.log", // Изменено с tail на cat для получения полного лога
+		"cat /tmp/minecraft_deploy.log",
 	}
 
 	output, err := pkg.DeployCommands(client, commands)
@@ -71,7 +71,6 @@ func Deployment(c *gin.Context) {
 	lines := strings.Split(strings.TrimSpace(output), "\n")
 	var message, adminPanel string
 
-	// Идем с конца лога, так как нужные нам строки обычно в конце
 	for i := len(lines) - 1; i >= 0; i-- {
 		line := lines[i]
 		if strings.HasPrefix(line, "Admin panel") {
@@ -80,15 +79,14 @@ func Deployment(c *gin.Context) {
 			message = line
 		}
 
-		// Если нашли обе строки, можно выйти из цикла
 		if message != "" && adminPanel != "" {
 			break
 		}
 	}
-	// Fallback to generic response
+
 	c.JSON(http.StatusOK, DeploymentResponse{
 		Message: "Deployment completed successfully",
-		Output:  output, // Возвращаем полный вывод, если не распознали формат
+		Output:  output,
 	})
 }
 
