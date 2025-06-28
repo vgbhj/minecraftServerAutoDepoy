@@ -29,7 +29,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/minecraft.ServerInfo"
+                            "$ref": "#/definitions/v1.ServerInfo"
                         }
                     }
                 }
@@ -86,6 +86,38 @@ const docTemplate = `{
                         "schema": {
                             "type": "object",
                             "additionalProperties": true
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/server/ip": {
+            "get": {
+                "description": "Returns the host server's external IP address",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "minecraft"
+                ],
+                "summary": "Get host server IP",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
                         }
                     },
                     "500": {
@@ -164,6 +196,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/server/status": {
+            "get": {
+                "description": "Returns Minecraft server status based on Docker container state",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "minecraft"
+                ],
+                "summary": "Get Minecraft server status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.ServerStatus"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/server/stop": {
             "post": {
                 "description": "Останавливает сервер Minecraft через docker-compose",
@@ -198,17 +250,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "minecraft.ServerInfo": {
-            "type": "object",
-            "properties": {
-                "type": {
-                    "type": "string"
-                },
-                "version": {
-                    "type": "string"
-                }
-            }
-        },
         "minecraft.VersionSelectionRequest": {
             "type": "object",
             "required": [
@@ -224,6 +265,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.ServerInfo": {
+            "type": "object",
+            "properties": {
+                "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.ServerStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "\"UP\" или \"DOWN\"",
                     "type": "string"
                 }
             }

@@ -3,10 +3,9 @@ package minecraft
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os/exec"
+	"strings"
 
-	"github.com/gin-gonic/gin"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
 )
 
@@ -53,13 +52,10 @@ func RestartDockerContainer() error {
 	return nil
 }
 
-// @Summary Get current server configuration
-// @Description Returns currently selected server type and version
-// @Tags minecraft
-// @Produce json
-// @Success 200 {object} ServerInfo
-// @Router /api/v1/minecraft/current [get]
-func GetCurrentConfig(c *gin.Context) {
-	config := GetServerInfo()
-	c.JSON(http.StatusOK, config)
+func IsDockerContainerRunning(containerName string) (bool, error) {
+	out, err := exec.Command("docker", "ps", "--filter", "name="+containerName, "--filter", "status=running", "--format", "{{.Names}}").Output()
+	if err != nil {
+		return false, err
+	}
+	return strings.Contains(string(out), containerName), nil
 }
