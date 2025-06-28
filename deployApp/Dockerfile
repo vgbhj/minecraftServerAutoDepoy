@@ -32,6 +32,4 @@ COPY --from=builder /app/deployApp .
 COPY --from=builder /app/frontend/dist ./frontend/dist
 COPY .env ./
 
-EXPOSE 8080
-
 CMD ["./deployApp"]
