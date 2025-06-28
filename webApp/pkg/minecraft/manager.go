@@ -3,16 +3,21 @@ package minecraft
 import (
 	"fmt"
 	"log"
+	"os"
 	"os/exec"
 	"strings"
 
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
 )
 
+const podmanBin = "/usr/local/bin/podman"
+const podmanComposeBin = "/usr/local/bin/podman-compose"
+
 func StartDockerContainer() error {
 	dir := setting.MinecraftSetting.ServerDir
-	cmd := exec.Command("podman-compose", "up", "-d")
+	cmd := exec.Command(podmanComposeBin, "up", "-d")
 	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "PATH=/usr/local/bin:"+os.Getenv("PATH"))
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("podman-compose output: %s", string(output))
@@ -24,8 +29,9 @@ func StartDockerContainer() error {
 
 func StopDockerContainer() error {
 	dir := setting.MinecraftSetting.ServerDir
-	cmd := exec.Command("podman-compose", "down")
+	cmd := exec.Command(podmanComposeBin, "down")
 	cmd.Dir = dir
+	cmd.Env = append(os.Environ(), "PATH=/usr/local/bin:"+os.Getenv("PATH"))
 	output, err := cmd.CombinedOutput()
 	if err != nil {
 		log.Printf("podman-compose output: %s", string(output))
@@ -53,7 +59,9 @@ func RestartDockerContainer() error {
 }
 
 func IsDockerContainerRunning(containerName string) (bool, error) {
-	out, err := exec.Command("podman", "ps", "--filter", "name="+containerName, "--filter", "status=running", "--format", "{{.Names}}").Output()
+	cmd := exec.Command(podmanBin, "ps", "--filter", "name="+containerName, "--filter", "status=running", "--format", "{{.Names}}")
+	cmd.Env = append(os.Environ(), "PATH=/usr/local/bin:"+os.Getenv("PATH"))
+	out, err := cmd.Output()
 	if err != nil {
 		return false, err
 	}
