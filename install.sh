@@ -110,6 +110,10 @@ TARGET_DIR="/opt/mcSAD"
 sudo rm -rf "$TARGET_DIR" 2>/dev/null
 sudo git clone "$REPO" "$TARGET_DIR" || error_exit "Failed to clone repository"
 
+# Generate admin password
+ADMIN_PASSWORD=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
+echo "ADMIN_PASSWORD=$ADMIN_PASSWORD" | sudo tee -a "$TARGET_DIR/webApp/.env" >/dev/null
+
 # Deploy application
 cd "/opt/mcSAD/webApp" || error_exit "Failed to enter project directory"
 docker-compose down || error_exit "Failed to stop and remove existing containers"
@@ -127,4 +131,5 @@ fi
 echo "200"
 echo "Done! The application has been successfully deployed in Docker."
 echo "Admin panel is available at: http://${SERVER_IP}:8080"
+echo "Admin password: $ADMIN_PASSWORD"
 exit 0
