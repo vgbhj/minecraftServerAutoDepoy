@@ -1,6 +1,9 @@
 package routers
 
 import (
+	"net/http"
+	"path/filepath"
+
 	"github.com/gin-gonic/gin"
 	swaggerfiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -21,5 +24,11 @@ func InitRouter() *gin.Engine {
 	{
 		apiv1.POST("/server/deploy", v1.Deployment)
 	}
+	distPath := filepath.Join(".", "frontend", "dist")
+	r.StaticFS("/assets", http.Dir(filepath.Join(distPath, "assets")))
+	r.StaticFile("/", filepath.Join(distPath, "index.html"))
+	r.NoRoute(func(c *gin.Context) {
+		c.File(filepath.Join(distPath, "index.html"))
+	})
 	return r
 }
