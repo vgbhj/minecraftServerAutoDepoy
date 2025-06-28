@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HelloView from '@/views/HelloView.vue'
 import NotFoundView from '@/views/NotFoundView.vue'
+import HomeView from '@/views/HomeView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -8,7 +8,7 @@ const router = createRouter({
     {
       path: '/',
       name: 'hello',
-      component: HelloView,
+      component: HomeView,
     },
     {
         path: '/:cathAll(.*)',
