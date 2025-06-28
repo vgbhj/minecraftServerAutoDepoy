@@ -17,7 +17,6 @@ RUN go mod download
 
 COPY . .
 
-# Копируем собранный фронтенд в нужное место для Go
 COPY --from=frontend-builder /frontend/dist ./frontend/dist
 
 RUN CGO_ENABLED=0 GOOS=linux go build -o webApp main.go
