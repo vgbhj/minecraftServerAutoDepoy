@@ -14,13 +14,6 @@ if which apt-get > /dev/null 2>&1; then
     wget_pkg="wget"
     git_pkg="git"
     dist="debian"
-elif which dnf > /dev/null 2>&1; then
-    pm=$(which dnf)
-    silent_inst="-yq install"
-    check_pkgs="-yq check-update"
-    wget_pkg="wget"
-    git_pkg="git"
-    dist="fedora"
 elif which yum > /dev/null 2>&1; then
     pm=$(which yum)
     silent_inst="-y -q install"
@@ -28,6 +21,13 @@ elif which yum > /dev/null 2>&1; then
     wget_pkg="wget"
     git_pkg="git"
     dist="centos"
+elif which dnf > /dev/null 2>&1; then
+    pm=$(which dnf)
+    silent_inst="-yq install"
+    check_pkgs="-yq check-update"
+    wget_pkg="wget"
+    git_pkg="git"
+    dist="fedora"
 elif which zypper > /dev/null 2>&1; then
     pm=$(which zypper)
     silent_inst="-nq install"
