@@ -92,77 +92,79 @@ onMounted(fetchProperties)
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-900 flex items-center justify-center">
-    <div class="w-full max-w-5xl bg-gray-800 rounded-xl shadow-lg p-8">
-      <h2 class="text-3xl font-bold mb-8 text-white text-center tracking-wide">Server Properties</h2>
-      <form @submit.prevent="saveProperties" v-if="!loading">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          <div
-            v-for="(value, key) in properties"
-            :key="key"
-            class="flex flex-col bg-gray-700 rounded-lg px-4 py-3 border border-gray-700 hover:border-green-500 transition"
-          >
-            <label :for="key" class="font-semibold text-gray-200 capitalize mb-2 break-all">{{ key }}</label>
-            <!-- Типизированный рендеринг -->
-            <template v-if="propertyMeta[key]?.type === 'number'">
-              <input
-                :id="key"
-                type="number"
-                v-model="properties[key]"
-                :min="propertyMeta[key].min"
-                :max="propertyMeta[key].max"
-                class="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-              />
-            </template>
-            <template v-else-if="propertyMeta[key]?.type === 'select'">
-              <select
-                :id="key"
-                v-model="properties[key]"
-                class="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-              >
-                <option v-for="opt in propertyMeta[key].options" :key="opt" :value="opt">{{ opt }}</option>
-              </select>
-            </template>
-            <template v-else-if="propertyMeta[key]?.type === 'boolean'">
-              <select
-                :id="key"
-                v-model="properties[key]"
-                class="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-              >
-                <option value="true">true</option>
-                <option value="false">false</option>
-              </select>
-            </template>
-            <template v-else>
-              <input
-                :id="key"
-                type="text"
-                v-model="properties[key]"
-                :maxlength="propertyMeta[key]?.maxlength"
-                class="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
-              />
-            </template>
+  <div style="margin-left: 14rem;">
+    <div class="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div class="w-full max-w-5xl bg-gray-800 rounded-xl shadow-lg p-8">
+        <h2 class="text-3xl font-bold mb-8 text-white text-center tracking-wide">Server Properties</h2>
+        <form @submit.prevent="saveProperties" v-if="!loading">
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div
+              v-for="(value, key) in properties"
+              :key="key"
+              class="flex flex-col bg-gray-700 rounded-lg px-4 py-3 border border-gray-700 hover:border-green-500 transition"
+            >
+              <label :for="key" class="font-semibold text-gray-200 capitalize mb-2 break-all">{{ key }}</label>
+              <!-- Typed rendering -->
+              <template v-if="propertyMeta[key]?.type === 'number'">
+                <input
+                  :id="key"
+                  type="number"
+                  v-model="properties[key]"
+                  :min="propertyMeta[key].min"
+                  :max="propertyMeta[key].max"
+                  class="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                />
+              </template>
+              <template v-else-if="propertyMeta[key]?.type === 'select'">
+                <select
+                  :id="key"
+                  v-model="properties[key]"
+                  class="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                >
+                  <option v-for="opt in propertyMeta[key].options" :key="opt" :value="opt">{{ opt }}</option>
+                </select>
+              </template>
+              <template v-else-if="propertyMeta[key]?.type === 'boolean'">
+                <select
+                  :id="key"
+                  v-model="properties[key]"
+                  class="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                >
+                  <option value="true">true</option>
+                  <option value="false">false</option>
+                </select>
+              </template>
+              <template v-else>
+                <input
+                  :id="key"
+                  type="text"
+                  v-model="properties[key]"
+                  :maxlength="propertyMeta[key]?.maxlength"
+                  class="px-3 py-2 rounded bg-gray-800 text-white border border-gray-600 focus:outline-none focus:ring-2 focus:ring-green-500 transition"
+                />
+              </template>
+            </div>
           </div>
-        </div>
-        <div class="flex gap-4 mt-8 justify-end">
-          <button
-            type="submit"
-            class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-2 rounded transition"
-          >
-            Save
-          </button>
-          <button
-            type="button"
-            class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-8 py-2 rounded transition"
-            @click="fetchProperties"
-          >
-            Reset
-          </button>
-        </div>
-        <div v-if="success" class="text-green-400 mt-4 text-center">{{ success }}</div>
-        <div v-if="error" class="text-red-400 mt-4 text-center">{{ error }}</div>
-      </form>
-      <div v-else class="text-gray-300 text-center">Loading...</div>
+          <div class="flex gap-4 mt-8 justify-end">
+            <button
+              type="submit"
+              class="bg-green-600 hover:bg-green-700 text-white font-semibold px-8 py-2 rounded transition"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              class="bg-gray-600 hover:bg-gray-700 text-white font-semibold px-8 py-2 rounded transition"
+              @click="fetchProperties"
+            >
+              Reset
+            </button>
+          </div>
+          <div v-if="success" class="text-green-400 mt-4 text-center">{{ success }}</div>
+          <div v-if="error" class="text-red-400 mt-4 text-center">{{ error }}</div>
+        </form>
+        <div v-else class="text-gray-300 text-center">Loading...</div>
+      </div>
     </div>
   </div>
 </template>
