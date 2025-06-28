@@ -8,6 +8,8 @@ import (
 )
 
 func DeployCommands(client *ssh.Client, commands []string) (string, error) {
+	var fullOutput bytes.Buffer
+
 	for _, cmd := range commands {
 		session, err := client.NewSession()
 		if err != nil {
@@ -21,18 +23,17 @@ func DeployCommands(client *ssh.Client, commands []string) (string, error) {
 		err = session.Run(cmd)
 		session.Close()
 
+		fullOutput.WriteString(cmdOutput.String() + "\n")
+
 		if err != nil {
-			fullOutput := cmdOutput.String()
+			output := fullOutput.String()
 			// Берем последние 500 символов
-			truncated := ""
-			if len(fullOutput) > 500 {
-				truncated = fullOutput[len(fullOutput)-500:]
-			} else {
-				truncated = fullOutput
+			if len(output) > 500 {
+				output = output[len(output)-500:]
 			}
-			return truncated, fmt.Errorf("command failed: %w", err)
+			return output, fmt.Errorf("command failed: %w", err)
 		}
 	}
 
-	return "All commands executed successfully", nil
+	return fullOutput.String(), nil
 }

@@ -55,7 +55,7 @@ func Deployment(c *gin.Context) {
 		"curl -s -O https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/deployApp/install.sh",
 		"chmod +x install.sh",
 		"sudo ./install.sh > /tmp/minecraft_deploy.log 2>&1",
-		"tail -n 20 /tmp/minecraft_deploy.log",
+		"cat /tmp/minecraft_deploy.log", // Изменено с tail на cat для получения полного лога
 	}
 
 	output, err := pkg.DeployCommands(client, commands)
@@ -68,26 +68,23 @@ func Deployment(c *gin.Context) {
 	}
 
 	// Parse the script output
-	lines := strings.Split(output, "\n")
+	lines := strings.Split(strings.TrimSpace(output), "\n")
 	var message, adminPanel string
 
-	for _, line := range lines {
-		if strings.HasPrefix(line, "Done!") {
-			message = line
-		} else if strings.HasPrefix(line, "Admin panel") {
+	// Идем с конца лога, так как нужные нам строки обычно в конце
+	for i := len(lines) - 1; i >= 0; i-- {
+		line := lines[i]
+		if strings.HasPrefix(line, "Admin panel") {
 			adminPanel = line
+		} else if strings.HasPrefix(line, "Done!") {
+			message = line
+		}
+
+		// Если нашли обе строки, можно выйти из цикла
+		if message != "" && adminPanel != "" {
+			break
 		}
 	}
-
-	// If we found the expected output format
-	if message != "" && adminPanel != "" {
-		c.JSON(http.StatusOK, DeploymentResponse{
-			Message: message,
-			Output:  adminPanel,
-		})
-		return
-	}
-
 	// Fallback to generic response
 	c.JSON(http.StatusOK, DeploymentResponse{
 		Message: "Deployment completed successfully",
