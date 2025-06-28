@@ -65,25 +65,29 @@ onMounted(() => {
       </h2>
       <div class="flex flex-wrap gap-4 mb-6">
         <button
-          class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded transition disabled:opacity-50"
+          class="bg-green-500 hover:bg-green-600 text-white font-semibold py-2 px-6 rounded transition disabled:opacity-50 flex items-center gap-2"
           :disabled="loading || status==='Online'"
           @click="serverAction('start')"
         >
-          ▶️ Start
+          <span class="pi pi-caret-right" ></span>
+        
+          Start
         </button>
         <button
-          class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded transition disabled:opacity-50"
+          class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-6 rounded transition disabled:opacity-50 flex items-center gap-2"
           :disabled="loading || status==='Offline'"
           @click="serverAction('stop')"
         >
-          ⏹ Stop
+          <span class="pi pi-power-off"></span>
+          Stop
         </button>
         <button
-          class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded transition disabled:opacity-50"
+          class="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-6 rounded transition disabled:opacity-50 flex items-center gap-2"
           :disabled="loading || status==='Offline'"
           @click="serverAction('restart')"
         >
-          🔄 Restart
+          <span class="pi pi-refresh"></span>
+          Restart
         </button>
       </div>
       <div v-if="error" class="text-red-400 mb-4">{{ error }}</div>
