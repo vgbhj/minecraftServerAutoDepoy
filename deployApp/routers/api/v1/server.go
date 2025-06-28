@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -51,30 +52,46 @@ func Deployment(c *gin.Context) {
 	defer client.Close()
 
 	commands := []string{
-		"curl -s -O https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/install.sh",
+		"curl -s -O https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/deployApp/install.sh",
 		"chmod +x install.sh",
-		"sudo ./install.sh",
+		"sudo ./install.sh > /tmp/minecraft_deploy.log 2>&1",
+		"tail -n 20 /tmp/minecraft_deploy.log",
 	}
 
 	output, err := pkg.DeployCommands(client, commands)
 	if err != nil {
-		lines := strings.Split(output, "\n")
-		start := len(lines) - 15
-		if start < 0 {
-			start = 0
-		}
-		truncatedOutput := strings.Join(lines[start:], "\n")
-
 		c.JSON(http.StatusInternalServerError, ErrorResponse{
 			Error:   "Deployment failed",
-			Details: truncatedOutput,
+			Details: fmt.Sprintf("%v\nLast 500 chars:\n%s", err, output),
 		})
 		return
 	}
 
+	// Parse the script output
+	lines := strings.Split(output, "\n")
+	var message, adminPanel string
+
+	for _, line := range lines {
+		if strings.HasPrefix(line, "Done!") {
+			message = line
+		} else if strings.HasPrefix(line, "Admin panel") {
+			adminPanel = line
+		}
+	}
+
+	// If we found the expected output format
+	if message != "" && adminPanel != "" {
+		c.JSON(http.StatusOK, DeploymentResponse{
+			Message: message,
+			Output:  adminPanel,
+		})
+		return
+	}
+
+	// Fallback to generic response
 	c.JSON(http.StatusOK, DeploymentResponse{
 		Message: "Deployment completed successfully",
-		Output:  "Success",
+		Output:  output, // Возвращаем полный вывод, если не распознали формат
 	})
 }
 
@@ -86,7 +103,7 @@ type DeploymentRequest struct {
 
 type DeploymentResponse struct {
 	Message string `json:"message" example:"Deployment completed successfully"`
-	Output  string `json:"output" example:"$ sudo pacman -Syu..."`
+	Output  string `json:"output" example:"Admin panel is available at: http://192.168.1.100:8080"`
 }
 
 type ErrorResponse struct {

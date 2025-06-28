@@ -3,18 +3,15 @@ package pkg
 import (
 	"bytes"
 	"fmt"
-	"strings"
 
 	"golang.org/x/crypto/ssh"
 )
 
 func DeployCommands(client *ssh.Client, commands []string) (string, error) {
-	var output strings.Builder
-
 	for _, cmd := range commands {
 		session, err := client.NewSession()
 		if err != nil {
-			return output.String(), fmt.Errorf("failed to create SSH session: %w", err)
+			return "", fmt.Errorf("failed to create SSH session: %w", err)
 		}
 
 		var cmdOutput bytes.Buffer
@@ -24,13 +21,18 @@ func DeployCommands(client *ssh.Client, commands []string) (string, error) {
 		err = session.Run(cmd)
 		session.Close()
 
-		output.WriteString(fmt.Sprintf("$ %s\n%s\n", cmd, cmdOutput.String()))
-
 		if err != nil {
-			output.WriteString(fmt.Sprintf("Error: %v\n", err))
-			return output.String(), err
+			fullOutput := cmdOutput.String()
+			// Берем последние 500 символов
+			truncated := ""
+			if len(fullOutput) > 500 {
+				truncated = fullOutput[len(fullOutput)-500:]
+			} else {
+				truncated = fullOutput
+			}
+			return truncated, fmt.Errorf("command failed: %w", err)
 		}
 	}
 
-	return output.String(), nil
+	return "All commands executed successfully", nil
 }
