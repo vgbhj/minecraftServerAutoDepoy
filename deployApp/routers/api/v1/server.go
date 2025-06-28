@@ -52,10 +52,10 @@ func Deployment(c *gin.Context) {
 	defer client.Close()
 
 	commands := []string{
-		"curl -s -O https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/deployApp/install.sh",
+		"curl -s -O https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/install.sh",
 		"chmod +x install.sh",
 		"sudo ./install.sh > /tmp/minecraft_deploy.log 2>&1",
-		"cat /tmp/minecraft_deploy.log", // Изменено с tail на cat для получения полного лога
+		"tail -n 20 /tmp/minecraft_deploy.log",
 	}
 
 	output, err := pkg.DeployCommands(client, commands)
@@ -67,29 +67,41 @@ func Deployment(c *gin.Context) {
 		return
 	}
 
-	// Parse the script output
-	lines := strings.Split(strings.TrimSpace(output), "\n")
-	var message, adminPanel string
+	serverIP := req.ServerIP // Используем IP из запроса по умолчанию
 
-	// Идем с конца лога, так как нужные нам строки обычно в конце
+	// Парсим вывод скрипта
+	lines := strings.Split(strings.TrimSpace(output), "\n")
+	var adminPanel string
+
+	// Ищем нужные строки в выводе (идем с конца)
 	for i := len(lines) - 1; i >= 0; i-- {
 		line := lines[i]
-		if strings.HasPrefix(line, "Admin panel") {
+		if strings.HasPrefix(line, "Admin panel is available at:") {
 			adminPanel = line
-		} else if strings.HasPrefix(line, "Done!") {
-			message = line
-		}
-
-		// Если нашли обе строки, можно выйти из цикла
-		if message != "" && adminPanel != "" {
 			break
 		}
 	}
-	// Fallback to generic response
-	c.JSON(http.StatusOK, DeploymentResponse{
+
+	// Если не нашли admin panel в выводе, формируем URL самостоятельно
+	if adminPanel == "" {
+		adminPanel = fmt.Sprintf("Admin panel is available at: http://%s:8080", serverIP)
+	}
+
+	// Формируем ответ
+	response := DeploymentResponse{
 		Message: "Deployment completed successfully",
-		Output:  output, // Возвращаем полный вывод, если не распознали формат
-	})
+		Output:  adminPanel,
+	}
+
+	// Если в выводе было сообщение "Done!", используем его
+	for _, line := range lines {
+		if strings.HasPrefix(line, "Done!") {
+			response.Message = strings.TrimPrefix(line, "Done! ")
+			break
+		}
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 type DeploymentRequest struct {
@@ -100,7 +112,7 @@ type DeploymentRequest struct {
 
 type DeploymentResponse struct {
 	Message string `json:"message" example:"Deployment completed successfully"`
-	Output  string `json:"output" example:"Admin panel is available at: http://192.168.1.100:8080"`
+	Output  string `json:"output" example:"$ sudo pacman -Syu..."`
 }
 
 type ErrorResponse struct {
