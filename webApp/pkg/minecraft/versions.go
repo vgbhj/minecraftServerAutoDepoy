@@ -1,6 +1,7 @@
 package minecraft
 
 import (
+	"archive/zip"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -49,7 +50,7 @@ func GetAvailableVersions(c *gin.Context) {
 	c.JSON(http.StatusOK, response)
 }
 
-func validateVersion(serverInfo ServerInfo) (ValidationResult, error) {
+func validateVersion(serverType, version string) (ValidationResult, error) {
 	var (
 		url      string
 		buildNum string
@@ -58,24 +59,21 @@ func validateVersion(serverInfo ServerInfo) (ValidationResult, error) {
 		valid    bool
 	)
 
-	switch strings.ToLower(serverInfo.Type) {
+	switch strings.ToLower(serverType) {
 	case "vanilla":
-		// Для Vanilla (официальный сервер Mojang)
-		if versionCheck(serverInfo.Version, ">=", "1.0") && versionCheck(serverInfo.Version, "<", "1.2") {
-			url = fmt.Sprintf("http://files.betacraft.uk/server-archive/release/%s/%s.jar", serverInfo.Version, serverInfo.Version)
+		if versionCheck(version, ">=", "1.0") && versionCheck(version, "<", "1.2") {
+			url = fmt.Sprintf("http://files.betacraft.uk/server-archive/release/%s/%s.jar", version, version)
 		} else {
-			url = fmt.Sprintf("https://mcversions.net/download/%s", serverInfo.Version)
+			url = fmt.Sprintf("https://mcversions.net/download/%s", version)
 		}
 
-		// Проверяем доступность URL
 		if resp, err := http.Head(url); err == nil && resp.StatusCode == http.StatusOK {
 			finalURL = url
 			valid = true
 		}
 
 	case "paper":
-		// Для PaperMC
-		paperAPI := fmt.Sprintf("https://api.papermc.io/v2/projects/paper/versions/%s", serverInfo.Version)
+		paperAPI := fmt.Sprintf("https://api.papermc.io/v2/projects/paper/versions/%s", version)
 		resp, err := http.Get(paperAPI)
 		if err != nil {
 			return ValidationResult{}, err
@@ -92,14 +90,13 @@ func validateVersion(serverInfo ServerInfo) (ValidationResult, error) {
 
 			if len(data.Builds) > 0 {
 				buildNum = fmt.Sprintf("%d", data.Builds[len(data.Builds)-1])
-				finalURL = fmt.Sprintf("%s/builds/%s/downloads/paper-%s-%s.jar", paperAPI, buildNum, serverInfo.Version, buildNum)
+				finalURL = fmt.Sprintf("%s/builds/%s/downloads/paper-%s-%s.jar", paperAPI, buildNum, version, buildNum)
 				valid = true
 			}
 		}
 
 	case "forge":
-		// Для Forge
-		forgeURL := fmt.Sprintf("https://files.minecraftforge.net/net/minecraftforge/forge/index_%s.html", serverInfo.Version)
+		forgeURL := fmt.Sprintf("https://files.minecraftforge.net/net/minecraftforge/forge/index_%s.html", version)
 		resp, err := http.Get(forgeURL)
 		if err != nil {
 			return ValidationResult{}, err
@@ -112,7 +109,6 @@ func validateVersion(serverInfo ServerInfo) (ValidationResult, error) {
 				return ValidationResult{}, err
 			}
 
-			// Парсим HTML для поиска ссылки на JAR
 			re := regexp.MustCompile(`href="([^"]+\.jar)"`)
 			matches := re.FindStringSubmatch(string(body))
 			if len(matches) > 1 {
@@ -126,12 +122,12 @@ func validateVersion(serverInfo ServerInfo) (ValidationResult, error) {
 	}
 
 	if !valid {
-		message = fmt.Sprintf("Version '%s' not found or cannot be downloaded", serverInfo.Version)
+		message = fmt.Sprintf("Version '%s' not found or cannot be downloaded", version)
 	}
 
 	return ValidationResult{
 		Valid:       valid,
-		Version:     serverInfo.Version,
+		Version:     version,
 		Build:       buildNum,
 		Message:     message,
 		DownloadURL: finalURL,
@@ -167,9 +163,6 @@ func HandleVersionSelection(c *gin.Context) {
 		return
 	}
 
-	// Сохраняем выбранную конфигурацию
-	SetServerInfo(req.CoreType, req.Version)
-
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Selection saved successfully",
 		"server": gin.H{
@@ -177,4 +170,49 @@ func HandleVersionSelection(c *gin.Context) {
 			"version": req.Version,
 		},
 	})
+}
+
+func GetMinecraftJarVersion(jarPath string) (string, error) {
+	r, err := zip.OpenReader(jarPath)
+	if err != nil {
+		return "", err
+	}
+	defer r.Close()
+
+	for _, f := range r.File {
+		if f.Name == "version.json" {
+			rc, err := f.Open()
+			if err != nil {
+				return "", err
+			}
+			defer rc.Close()
+
+			var data struct {
+				Id string `json:"id"`
+			}
+			if err := json.NewDecoder(rc).Decode(&data); err != nil {
+				return "", err
+			}
+			return data.Id, nil
+		}
+		if f.Name == "META-INF/MANIFEST.MF" {
+			rc, err := f.Open()
+			if err != nil {
+				return "", err
+			}
+			defer rc.Close()
+
+			content, err := io.ReadAll(rc)
+			if err != nil {
+				return "", err
+			}
+			re := regexp.MustCompile(`Implementation-Version: ([^\s]+)`)
+			matches := re.FindStringSubmatch(string(content))
+			if len(matches) > 1 {
+				return matches[1], nil
+			}
+		}
+	}
+
+	return "", errors.New("version info not found in jar")
 }

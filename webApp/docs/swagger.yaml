@@ -1,11 +1,4 @@
 definitions:
-  minecraft.ServerInfo:
-    properties:
-      type:
-        type: string
-      version:
-        type: string
-    type: object
   minecraft.VersionSelectionRequest:
     properties:
       core_option:
@@ -19,6 +12,17 @@ definitions:
     - core_type
     - version
     type: object
+  v1.ServerInfo:
+    properties:
+      version:
+        type: string
+    type: object
+  v1.ServerStatus:
+    properties:
+      status:
+        description: '"UP" или "DOWN"'
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -31,7 +35,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/minecraft.ServerInfo'
+            $ref: '#/definitions/v1.ServerInfo'
       summary: Get current server configuration
       tags:
       - minecraft
@@ -78,6 +82,27 @@ paths:
       summary: Get available Minecraft versions and cores
       tags:
       - minecraft
+  /api/v1/server/ip:
+    get:
+      description: Returns the host server's external IP address
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get host server IP
+      tags:
+      - minecraft
   /api/v1/server/restart:
     post:
       description: Перезагружает сервер Minecraft через docker-compose
@@ -118,6 +143,19 @@ paths:
               type: string
             type: object
       summary: Запуск сервера Minecraft
+      tags:
+      - minecraft
+  /api/v1/server/status:
+    get:
+      description: Returns Minecraft server status based on Docker container state
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.ServerStatus'
+      summary: Get Minecraft server status
       tags:
       - minecraft
   /api/v1/server/stop:

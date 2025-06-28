@@ -30,7 +30,9 @@ func InitRouter() *gin.Engine {
 		apiv1.POST("/server/restart", v1.RestartServer)
 		apiv1.GET("/minecraft/versions", minecraft.GetAvailableVersions)
 		apiv1.POST("/minecraft/select", minecraft.HandleVersionSelection)
-		apiv1.GET("/minecraft/current", minecraft.GetCurrentConfig)
+		apiv1.GET("/minecraft/current", v1.GetCurrentVersion)
+		apiv1.GET("/server/status", v1.GetServerStatus)
+		apiv1.GET("/server/ip", v1.GetServerIP)
 	}
 	distPath := filepath.Join(".", "frontend", "dist")
 	r.StaticFS("/assets", http.Dir(filepath.Join(distPath, "assets")))
