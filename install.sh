@@ -71,19 +71,35 @@ if ! command -v podman &> /dev/null; then
     sudo $pm $silent_inst podman || error_exit "Failed to install podman"
 fi
 
-# Install podman-compose if not present
-if ! command -v podman-compose &> /dev/null; then
+# Install pip3 if not present
+if ! command -v pip3 &> /dev/null; then
     if [ "$dist" = "debian" ] || [ "$dist" = "ubuntu" ]; then
         sudo $pm $check_pkgs || error_exit "Failed to update repositories"
-        sudo $pm $silent_inst podman-compose || error_exit "Failed to install podman-compose"
+        sudo $pm $silent_inst python3-pip || error_exit "Failed to install pip3"
+    elif [ "$dist" = "fedora" ] || [ "$dist" = "centos" ]; then
+        sudo $pm $check_pkgs || error_exit "Failed to update repositories"
+        sudo $pm $silent_inst python3-pip || error_exit "Failed to install pip3"
+    elif [ "$dist" = "opensuse" ]; then
+        sudo $pm $check_pkgs || error_exit "Failed to update repositories"
+        sudo $pm $silent_inst python3-pip || error_exit "Failed to install pip3"
+    elif [ "$dist" = "archlinux" ]; then
+        sudo $pm $check_pkgs || error_exit "Failed to update repositories"
+        sudo $pm $silent_inst python-pip || error_exit "Failed to install pip3"
     else
-        # Fallback to pip3 if no package available
-        if command -v pip3 &> /dev/null; then
-            sudo pip3 install podman-compose || error_exit "Failed to install podman-compose"
-        else
-            error_exit "pip3 not found and podman-compose package not available"
-        fi
+        error_exit "pip3 package not available for your distribution"
     fi
+fi
+
+# Install podman-compose if not present
+if ! command -v podman-compose &> /dev/null; then
+    sudo pip3 install podman-compose || error_exit "Failed to install podman-compose"
+fi
+
+# Ensure /usr/local/bin is in PATH for current and future sessions
+if [[ ":$PATH:" != *":/usr/local/bin:"* ]]; then
+    export PATH="/usr/local/bin:$PATH"
+    echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bashrc
+    echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.profile
 fi
 
 # Start Podman service (for rootless, may not be needed)
@@ -99,8 +115,9 @@ sudo git clone "$REPO" "$TARGET_DIR" || error_exit "Failed to clone repository"
 
 # Deploy application
 cd "/opt/mcSAD/webApp" || error_exit "Failed to enter project directory"
-sudo podman-compose down || error_exit "Failed to stop and remove existing containers"
-sudo podman-compose up -d --build || error_exit "Failed to run podman-compose"
+export PATH="/usr/local/bin:$PATH"
+podman-compose down || error_exit "Failed to stop and remove existing containers"
+podman-compose up -d --build || error_exit "Failed to run podman-compose"
 
 # Get server IP
 SERVER_IP=$(ip route get 8.8.8.8 | grep -oP 'src \K[\d.]+')
