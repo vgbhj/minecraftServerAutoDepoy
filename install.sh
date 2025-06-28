@@ -111,13 +111,15 @@ sudo rm -rf "$TARGET_DIR" 2>/dev/null
 sudo git clone "$REPO" "$TARGET_DIR" || error_exit "Failed to clone repository"
 
 # Generate admin password
+# Generate admin password
 ADMIN_PASSWORD=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 16)
+echo "" | sudo tee -a "$TARGET_DIR/webApp/.env" >/dev/null
 echo "ADMIN_PASSWORD=$ADMIN_PASSWORD" | sudo tee -a "$TARGET_DIR/webApp/.env" >/dev/null
 
 # Deploy application
 cd "/opt/mcSAD/webApp" || error_exit "Failed to enter project directory"
 /usr/local/bin/docker-compose down || error_exit "Failed to stop and remove existing containers"
-/usr/local/bin/docker-compose up -d --build || error_exit "Failed to run docker-compose"
+/usr/local/bin/docker-compose up -d --build || error_exit "Failed to run docker-compose
 
 # Get server IP
 SERVER_IP=$(ip route get 8.8.8.8 | grep -oP 'src \K[\d.]+')

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
@@ -21,8 +22,10 @@ func main() {
 	endPoint := fmt.Sprintf(":%d", setting.ServerSetting.HttpPort)
 
 	server := &http.Server{
-		Addr:    endPoint,
-		Handler: routersInit,
+		Addr:         endPoint,
+		Handler:      routersInit,
+		ReadTimeout:  15 * time.Minute,
+		WriteTimeout: 15 * time.Minute,
 	}
 
 	log.Printf("[info] start http server listening %s", endPoint)
