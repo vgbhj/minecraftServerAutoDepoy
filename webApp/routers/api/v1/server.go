@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"bufio"
+	"os"
 	"os/exec"
 	"strings"
 
@@ -154,5 +156,115 @@ func GetServerIP(c *gin.Context) {
 	}
 	c.JSON(200, gin.H{
 		"ip": ip,
+	})
+}
+
+// @Summary Get Minecraft server properties
+// @Description Returns all fields from server.properties as JSON
+// @Tags minecraft
+// @Produce json
+// @Success 200 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/v1/server/properties [get]
+func GetServerProperties(c *gin.Context) {
+	propsPath := setting.MinecraftSetting.ServerDir + "server.properties"
+	file, err := os.Open(propsPath)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error":   "Failed to open server.properties",
+			"details": err.Error(),
+		})
+		return
+	}
+	defer file.Close()
+
+	properties := make(map[string]string)
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) == 0 || line[0] == '#' {
+			continue
+		}
+		sepIdx := strings.Index(line, "=")
+		if sepIdx < 0 {
+			continue
+		}
+		key := strings.TrimSpace(line[:sepIdx])
+		val := strings.TrimSpace(line[sepIdx+1:])
+		properties[key] = val
+	}
+	if err := scanner.Err(); err != nil {
+		c.JSON(500, gin.H{
+			"error":   "Failed to read server.properties",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, properties)
+}
+
+// @Summary Update Minecraft server properties
+// @Description Updates fields in server.properties from JSON body
+// @Tags minecraft
+// @Accept json
+// @Produce json
+// @Param properties body map[string]string true "Properties to update"
+// @Success 200 {object} map[string]string
+// @Failure 400 {object} map[string]string
+// @Failure 500 {object} map[string]string
+// @Router /api/v1/server/properties [put]
+func UpdateServerProperties(c *gin.Context) {
+	propsPath := setting.MinecraftSetting.ServerDir + "server.properties"
+
+	var updates map[string]string
+	if err := c.ShouldBindJSON(&updates); err != nil {
+		c.JSON(400, gin.H{
+			"error": "Invalid JSON body",
+		})
+		return
+	}
+
+	file, err := os.Open(propsPath)
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error":   "Failed to open server.properties",
+			"details": err.Error(),
+		})
+		return
+	}
+	defer file.Close()
+
+	var lines []string
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) == 0 || line[0] == '#' || strings.Index(line, "=") < 0 {
+			lines = append(lines, line)
+			continue
+		}
+		sepIdx := strings.Index(line, "=")
+		key := strings.TrimSpace(line[:sepIdx])
+		if val, ok := updates[key]; ok {
+			lines = append(lines, key+"="+val)
+			delete(updates, key)
+		} else {
+			lines = append(lines, line)
+		}
+	}
+	for key, val := range updates {
+		lines = append(lines, key+"="+val)
+	}
+
+	if err := os.WriteFile(propsPath, []byte(strings.Join(lines, "\n")+"\n"), 0644); err != nil {
+		c.JSON(500, gin.H{
+			"error":   "Failed to write server.properties",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(200, gin.H{
+		"message": "server.properties updated",
 	})
 }
