@@ -41,7 +41,7 @@ You can deploy minecraftServerAutoDepoy in two ways:
 
 #### 1. Deploy via Our Website *(Recommended)*
 
-- Visit [https://minecraft-auto-deploy.example.com](https://minecraft-auto-deploy.example.com) *(coming soon)*.
+- Visit[https://mcsad.mkrdnk.ru/](https://mcsad.mkrdnk.ru/).
 - Enter your target server's SSH details in the web interface.
 - The system will automatically connect to your server, install all dependencies, and deploy the Minecraft server with the web dashboard.
 - Manage your server directly from the website.
