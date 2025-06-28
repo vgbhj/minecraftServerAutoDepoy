@@ -164,6 +164,26 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/server/status": {
+            "get": {
+                "description": "Returns Minecraft server status based on Docker container state",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "minecraft"
+                ],
+                "summary": "Get Minecraft server status",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/v1.ServerStatus"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/server/stop": {
             "post": {
                 "description": "Останавливает сервер Minecraft через docker-compose",
@@ -221,6 +241,15 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "version": {
+                    "type": "string"
+                }
+            }
+        },
+        "v1.ServerStatus": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "description": "\"UP\" или \"DOWN\"",
                     "type": "string"
                 }
             }

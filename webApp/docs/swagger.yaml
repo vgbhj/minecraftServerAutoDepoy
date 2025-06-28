@@ -17,6 +17,12 @@ definitions:
       version:
         type: string
     type: object
+  v1.ServerStatus:
+    properties:
+      status:
+        description: '"UP" или "DOWN"'
+        type: string
+    type: object
 info:
   contact: {}
 paths:
@@ -116,6 +122,19 @@ paths:
               type: string
             type: object
       summary: Запуск сервера Minecraft
+      tags:
+      - minecraft
+  /api/v1/server/status:
+    get:
+      description: Returns Minecraft server status based on Docker container state
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/v1.ServerStatus'
+      summary: Get Minecraft server status
       tags:
       - minecraft
   /api/v1/server/stop:

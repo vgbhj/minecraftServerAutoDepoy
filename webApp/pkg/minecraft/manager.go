@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"strings"
 
 	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
 )
@@ -49,4 +50,12 @@ func RestartDockerContainer() error {
 
 	log.Printf("Minecraft server restarted successfully")
 	return nil
+}
+
+func IsDockerContainerRunning(containerName string) (bool, error) {
+	out, err := exec.Command("docker", "ps", "--filter", "name="+containerName, "--filter", "status=running", "--format", "{{.Names}}").Output()
+	if err != nil {
+		return false, err
+	}
+	return strings.Contains(string(out), containerName), nil
 }

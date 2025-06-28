@@ -10,6 +10,10 @@ type ServerInfo struct {
 	Version string `json:"version"`
 }
 
+type ServerStatus struct {
+	Status string `json:"status"` // "UP" или "DOWN"
+}
+
 // @Summary      Запуск сервера Minecraft
 // @Description  Запускает сервер Minecraft через docker-compose
 // @Tags         minecraft
@@ -95,4 +99,28 @@ func GetCurrentVersion(c *gin.Context) {
 	c.JSON(200, gin.H{
 		"version": version,
 	})
+}
+
+// @Summary Get Minecraft server status
+// @Description Returns Minecraft server status based on Docker container state
+// @Tags minecraft
+// @Produce json
+// @Success 200 {object} ServerStatus
+// @Router /api/v1/server/status [get]
+func GetServerStatus(c *gin.Context) {
+	isUp, err := minecraft.IsDockerContainerRunning("minecraft-server")
+	if err != nil {
+		c.JSON(500, gin.H{
+			"error":   "Failed to get server status",
+			"details": err.Error(),
+		})
+		return
+	}
+
+	status := "DOWN"
+	if isUp {
+		status = "UP"
+	}
+
+	c.JSON(200, ServerStatus{Status: status})
 }
