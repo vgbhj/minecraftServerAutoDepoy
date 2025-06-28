@@ -37,6 +37,7 @@ func InitRouter() *gin.Engine {
 		apiv1.PUT("/server/properties", v1.UpdateServerProperties)
 		apiv1.GET("/console/stream", v1.ConsoleStream)
 		apiv1.POST("/console/rcon", v1.SendRconCommand)
+		apiv1.POST("/minecraft/download", minecraft.DownloadAndReplaceServerJar)
 	}
 	distPath := filepath.Join(".", "frontend", "dist")
 	r.StaticFS("/assets", http.Dir(filepath.Join(distPath, "assets")))

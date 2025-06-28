@@ -116,8 +116,8 @@ echo "ADMIN_PASSWORD=$ADMIN_PASSWORD" | sudo tee -a "$TARGET_DIR/webApp/.env" >/
 
 # Deploy application
 cd "/opt/mcSAD/webApp" || error_exit "Failed to enter project directory"
-docker-compose down || error_exit "Failed to stop and remove existing containers"
-docker-compose up -d --build || error_exit "Failed to run docker-compose"
+/usr/local/bin/docker-compose down || error_exit "Failed to stop and remove existing containers"
+/usr/local/bin/docker-compose up -d --build || error_exit "Failed to run docker-compose"
 
 # Get server IP
 SERVER_IP=$(ip route get 8.8.8.8 | grep -oP 'src \K[\d.]+')

@@ -24,6 +24,66 @@
                 }
             }
         },
+        "/api/v1/minecraft/download": {
+            "post": {
+                "description": "Downloads the selected Minecraft server jar and replaces /opt/minecraft-server/server.jar",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "minecraft"
+                ],
+                "summary": "Download Minecraft server jar",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Server type (e.g. paper, vanilla, forge)",
+                        "name": "serverType",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Minecraft version",
+                        "name": "version",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/minecraft/select": {
             "post": {
                 "description": "Saves selected Minecraft version and server type",

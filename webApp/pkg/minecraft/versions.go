@@ -7,10 +7,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/vgbhj/minecraftServerAutoDepoy/pkg/setting"
 )
 
 type ValidationResult struct {
@@ -215,4 +218,77 @@ func GetMinecraftJarVersion(jarPath string) (string, error) {
 	}
 
 	return "", errors.New("version info not found in jar")
+}
+
+// @Summary      Download Minecraft server jar
+// @Description  Downloads the selected Minecraft server jar and replaces /opt/minecraft-server/server.jar
+// @Tags         minecraft
+// @Accept       json
+// @Produce      json
+// @Param        serverType  query  string  true  "Server type (e.g. paper, vanilla, forge)"
+// @Param        version     query  string  true  "Minecraft version"
+// @Success      200  {object}  map[string]string
+// @Failure      400  {object}  map[string]string
+// @Failure      500  {object}  map[string]string
+// @Router       /api/v1/minecraft/download [post]
+func DownloadAndReplaceServerJar(c *gin.Context) {
+	serverType := c.Query("serverType")
+	version := c.Query("version")
+
+	if serverType == "" || version == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "serverType and version are required"})
+		return
+	}
+
+	validation, err := validateVersion(serverType, version)
+	if err != nil || !validation.Valid || validation.DownloadURL == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Could not find download URL for this version"})
+		return
+	}
+
+	// Download the jar
+	resp, err := http.Get(validation.DownloadURL)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to download jar"})
+		return
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to download jar, bad status"})
+		return
+	}
+
+	targetDir := setting.MinecraftSetting.ServerDir
+	if err := os.MkdirAll(targetDir, 0755); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create target directory"})
+		return
+	}
+
+	tmpFile := filepath.Join(targetDir, "server_new.jar")
+	out, err := os.Create(tmpFile)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create jar file"})
+		return
+	}
+	defer out.Close()
+
+	if _, err := io.Copy(out, resp.Body); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to write jar file"})
+		return
+	}
+
+	// Replace old server.jar with new one
+	finalJar := filepath.Join(targetDir, "server.jar")
+	if err := os.Rename(tmpFile, finalJar); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to replace server.jar"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":    "Server jar downloaded and replaced successfully",
+		"serverType": serverType,
+		"version":    version,
+		"jarPath":    finalJar,
+	})
 }

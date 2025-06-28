@@ -70,12 +70,17 @@ func Deployment(c *gin.Context) {
 	serverIP := req.ServerIP
 
 	lines := strings.Split(strings.TrimSpace(output), "\n")
-	var adminPanel string
+	var adminPanel, adminPassword string
 
 	for i := len(lines) - 1; i >= 0; i-- {
 		line := lines[i]
 		if strings.HasPrefix(line, "Admin panel is available at:") {
 			adminPanel = line
+		}
+		if strings.HasPrefix(line, "Admin password:") {
+			adminPassword = line
+		}
+		if adminPanel != "" && adminPassword != "" {
 			break
 		}
 	}
@@ -86,7 +91,7 @@ func Deployment(c *gin.Context) {
 
 	response := DeploymentResponse{
 		Message: "Deployment completed successfully",
-		Output:  adminPanel,
+		Output:  adminPanel + "\n" + adminPassword,
 	}
 
 	for _, line := range lines {

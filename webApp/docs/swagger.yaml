@@ -39,6 +39,46 @@ paths:
       summary: Get current server configuration
       tags:
       - minecraft
+  /api/v1/minecraft/download:
+    post:
+      consumes:
+      - application/json
+      description: Downloads the selected Minecraft server jar and replaces /opt/minecraft-server/server.jar
+      parameters:
+      - description: Server type (e.g. paper, vanilla, forge)
+        in: query
+        name: serverType
+        required: true
+        type: string
+      - description: Minecraft version
+        in: query
+        name: version
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Download Minecraft server jar
+      tags:
+      - minecraft
   /api/v1/minecraft/select:
     post:
       consumes:
