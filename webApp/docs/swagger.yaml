@@ -103,6 +103,64 @@ paths:
       summary: Get host server IP
       tags:
       - minecraft
+  /api/v1/server/properties:
+    get:
+      description: Returns all fields from server.properties as JSON
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get Minecraft server properties
+      tags:
+      - minecraft
+    put:
+      consumes:
+      - application/json
+      description: Updates fields in server.properties from JSON body
+      parameters:
+      - description: Properties to update
+        in: body
+        name: properties
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update Minecraft server properties
+      tags:
+      - minecraft
   /api/v1/server/restart:
     post:
       description: Перезагружает сервер Minecraft через docker-compose

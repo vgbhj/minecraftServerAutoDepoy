@@ -55,7 +55,7 @@ func Deployment(c *gin.Context) {
 		"curl -s -O https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/install.sh",
 		"chmod +x install.sh",
 		"sudo ./install.sh > /tmp/minecraft_deploy.log 2>&1",
-		"tail -n 20 /tmp/minecraft_deploy.log",
+		"cat /tmp/minecraft_deploy.log",
 	}
 
 	output, err := pkg.DeployCommands(client, commands)
