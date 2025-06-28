@@ -51,7 +51,7 @@ func Deployment(c *gin.Context) {
 	defer client.Close()
 
 	commands := []string{
-		"wget https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/install.sh",
+		"curl -s -O https://raw.githubusercontent.com/vgbhj/minecraftServerAutoDepoy/refs/heads/main/install.sh",
 		"chmod +x install.sh",
 		"sudo ./install.sh",
 	}
