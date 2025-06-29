@@ -21,7 +21,8 @@ function scrollToBottom() {
 }
 
 onMounted(() => {
-  ws = new WebSocket(`ws://${window.location.host}/api/v1/console/stream`)
+  const adminPassword = localStorage.getItem('adminPassword')
+  ws = new WebSocket(`ws://${window.location.host}/api/v1/console/stream?admin_password=${encodeURIComponent(adminPassword)}`)
   ws.onmessage = (event) => {
     logs.value += event.data
     scrollToBottom()

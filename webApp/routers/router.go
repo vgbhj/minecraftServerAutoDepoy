@@ -36,10 +36,11 @@ func InitRouter() *gin.Engine {
 		apiv1.GET("/server/ip", v1.GetServerIP)
 		apiv1.GET("/server/properties", v1.GetServerProperties)
 		apiv1.PUT("/server/properties", v1.UpdateServerProperties)
-		apiv1.GET("/console/stream", v1.ConsoleStream)
-		apiv1.POST("/console/rcon", v1.SendRconCommand)
 		apiv1.POST("/minecraft/download", minecraft.DownloadAndReplaceServerJar)
 	}
+
+	r.GET("/api/v1/console/stream", v1.ConsoleStream)
+	r.POST("/api/v1/console/rcon", v1.SendRconCommand)
 	distPath := filepath.Join(".", "frontend", "dist")
 	r.StaticFS("/assets", http.Dir(filepath.Join(distPath, "assets")))
 	r.StaticFile("/", filepath.Join(distPath, "index.html"))
